@@ -1,0 +1,11 @@
+{
+  "name": "concrete-parser",
+  "version": "1.0.0",
+  "description": "Concrete Parser with XState",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "author": "Reed Spool",
+  "license": "ISC"
+}
