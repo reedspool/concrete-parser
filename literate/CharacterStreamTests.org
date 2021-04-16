@@ -1,0 +1,117 @@
+#+TITLE: Character Stream Tests
+#+PROPERTY: header-args    :comments both :tangle ../src/CharacterStream.test.js
+
+* Preamble
+
+#+begin_src js
+import { stream, streamFile, Kind, getKind } from "../src/CharacterStream";
+#+end_src
+
+* Stream
+
+#+begin_src js
+it("Takes a string of letters and streams characters", () => {
+    const mock = jest.fn();
+    const input = "test";
+    stream(input, mock);
+    expect(mock).toHaveBeenCalledTimes(input.length);
+    // NthCalledWith is 1-based
+    expect(mock).toHaveBeenNthCalledWith(1, Kind.Alphabetic.event, "t");
+    expect(mock).toHaveBeenNthCalledWith(2, Kind.Alphabetic.event, "e");
+    expect(mock).toHaveBeenNthCalledWith(3, Kind.Alphabetic.event, "s");
+    expect(mock).toHaveBeenNthCalledWith(4, Kind.Alphabetic.event, "t");
+})
+#+end_src
+* Stream File
+
+#+begin_src js
+it("Takes a string of letters and streams characters plus EOF", () => {
+    const mock = jest.fn();
+    const input = "test";
+    streamFile(input, mock);
+    expect(mock).toHaveBeenCalledTimes(input.length + 1);
+    // NthCalledWith is 1-based
+    expect(mock).toHaveBeenNthCalledWith(1, Kind.Alphabetic.event, "t");
+    expect(mock).toHaveBeenNthCalledWith(2, Kind.Alphabetic.event, "e");
+    expect(mock).toHaveBeenNthCalledWith(3, Kind.Alphabetic.event, "s");
+    expect(mock).toHaveBeenNthCalledWith(4, Kind.Alphabetic.event, "t");
+    expect(mock).toHaveBeenNthCalledWith(5, Kind.EOF.event, undefined);
+})
+#+end_src
+* Unknown character
+
+#+begin_src js
+it("Unknown character throws an error", () => {
+    const input = "\x00";
+    const fn = () => streamFile(input, mock);
+    expect(fn).toThrowError();
+})
+#+end_src
+* Kind
+
+First test that all valid characters have a "kind."
+
+#+begin_src js
+it("All valid characters have a kind", () => {
+    const testCharHasKind = (char) => {
+        const kind = getKind(char);
+        expect(kind.name).toBeDefined();
+        expect(kind).toBe(Kind[kind.name]);
+    }
+    const rangeHasKind = (start, end) => {
+        let i = start.charCodeAt(0);
+        const last = end.charCodeAt(0);
+        for (; i <= last; i++) {
+            const char = String.fromCharCode(i);
+            testCharHasKind(char);
+        }
+    }
+
+    rangeHasKind("a", "z");
+    rangeHasKind("A", "Z");
+    rangeHasKind("0", "9");
+
+    // Now check all literals
+    ["_", ".", "!", "@", "[", "]", "(", ")", "{", "}", ":"]
+        .forEach(testCharHasKind);
+})
+#+end_src
+
+Next test that kind has the correct shape
+
+I don't know how to do this kind of complex structure testing idiomatically with Jest, so making up my own failure. I guess this is what TypeScript is great for.
+
+#+begin_src js
+it("All kinds have valid shape", () => {
+    const fail = (msg) =>
+        expect(msg).not.toBeDefined();
+    Object.entries(Kind).forEach(
+        ([name, value]) => {
+            expect(value.name).toBe(name);
+
+            if (value.literal && value.group) {
+                fail(`Kind ${name} has both literal and group`);
+            }
+            else if (value.literal) {
+                expect(typeof value.literal).toBe("string")
+                expect(value.literal).toHaveLength(1);
+            }
+            else if (value.group) {
+                expect(Array.isArray(value.group)).toBe(true);
+                value.group.forEach((g) => {
+                    if (typeof g == "string") {
+                        expect(g).toHaveLength(1);
+                    }
+                    else if (typeof g == "object") {
+                        expect(g.type).toBe("range");
+                        expect(typeof g.start).toBe("string");
+                        expect(g.start).toHaveLength(1);
+                        expect(typeof g.end).toBe("string");
+                        expect(g.end).toHaveLength(1);
+                    }
+                })
+            }
+        });
+
+})
+#+end_src

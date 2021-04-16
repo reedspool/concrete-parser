@@ -1,0 +1,18 @@
+#+TITLE: Parser
+#+PROPERTY: header-args    :comments both :tangle ../src/Parser.js
+
+* Preamble
+
+#+begin_src js
+import * as Block from "../src/Block";
+#+end_src
+
+* Actually parsing a stream of characters
+
+I wrote code to pass just the simplest case first:
+
+#+begin_src js
+export const single = (source) => {
+    if (source == "_") return Block.Blank();
+}
+#+end_src

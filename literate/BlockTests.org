@@ -1,0 +1,38 @@
+#+TITLE: Block Tests
+#+PROPERTY: header-args    :comments both :tangle ../test/Block.test.js
+
+* Block test preamble
+
+#+begin_src js
+import * as Block from "../src/Block";
+#+end_src
+
+* Unit Tests
+#+begin_src js
+it("Blank", () => {
+    const block = Block.Blank();
+    expect(block).toEqual({
+        type : "blank"
+    })
+})
+#+end_src
+
+#+begin_src js
+it("Numbers", () => {
+    const block = Block.Number(7.5);
+    expect(block).toEqual({
+        type : "number",
+        value: 7.5
+    })
+})
+#+end_src
+
+#+begin_src js
+it("String", () => {
+    const block = Block.String("Hello");
+    expect(block).toEqual({
+        type : "string",
+        value: "Hello"
+    })
+})
+#+end_src

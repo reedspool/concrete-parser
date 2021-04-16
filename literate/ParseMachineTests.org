@@ -1,0 +1,46 @@
+#+TITLE: Parse Machine Tests
+#+PROPERTY: header-args    :comments both :tangle ../test/ParseMachine.test.js
+
+* Preamble
+
+#+begin_src js
+import * as ParseMachine from "../src/ParseMachine.js";
+import { Machine } from "xstate";
+import { AbstractSyntaxTree } from "../src/AbstractSyntaxTree"
+import { TestInterpreter, toMatchState } from "xstate-jest-tools";
+expect.extend({ toMatchState });
+
+const parseMachine =
+    Machine(ParseMachine.definition)
+        .withConfig(ParseMachine.config)
+        // Supply empty context to avoid warning
+        .withContext({});
+
+let interpreter;
+
+beforeEach(() => {
+    interpreter = TestInterpreter(parseMachine);
+})
+#+end_src
+
+* Simple
+Start with the simplest test:
+
+#+begin_src js
+it("Starts empty", () => {
+    expect(interpreter.S).toMatchState("ready");
+    expect(interpreter.C.tree).toEqual(AbstractSyntaxTree());
+})
+#+end_src
+
+Now let's send  the simplest case, the blank block, =_=.
+
+#+begin_src js
+it.skip("Parses just a blank", () => {
+    interpreter.send({ type: "UNDERSCORE" })
+    interpreter.send({ type: "EOF" })
+    expect(interpreter.S).toMatchState("done");
+    expect(interpreter.context.tree).toEqual(
+        Block.Blank())
+})
+#+end_src

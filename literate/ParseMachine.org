@@ -1,0 +1,63 @@
+#+TITLE: Parse Machine
+#+PROPERTY: header-args    :comments both :tangle ../src/ParseMachine.js
+
+It was time to dig in to the statechart implementation. I knew I wanted to send each character as a separate event to the machine.
+
+I started with a template Machine module from another XState project.
+
+* Preamble
+
+#+begin_src js
+import { Machine } from "xstate";
+import { assign } from '@xstate/immer';
+import { Token } from "./LexicalToken"
+import { AbstractSyntaxTree } from "./AbstractSyntaxTree"
+#+end_src
+
+* Definition
+#+begin_src js
+export const definition = {
+    strict: true,
+    id: "ParseMachine",
+    initial: "uninitialized",
+    states: {
+        uninitialized : {
+            entry: [ "initialize" ],
+            always: "ready"
+        },
+        ready : {
+            on: {
+                [Token.ValueIdentifier.event] : {
+                    actions: [ "addTokenToTape" ]
+                }
+            }
+        },
+        done: { final : true }
+    },
+    on : {
+        EOF: { target: "done" }
+    }
+};
+#+end_src
+
+* Configuration
+
+#+begin_src js
+export const config = {
+    actions: {
+        initialize: assign((C, E) => {
+            C.tree = AbstractSyntaxTree();
+        }),
+        addTokenToTape: assign((C, E) => {
+            C.tree.addToCurrentTape(E);
+        })
+    },
+    guards : {}
+};
+#+end_src
+
+* Initialize
+
+#+begin_src js
+export const init = () => Machine(definition, config);
+#+end_src

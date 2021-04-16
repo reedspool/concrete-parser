@@ -1,0 +1,28 @@
+#+TITLE: Block
+#+PROPERTY: header-args    :comments both :tangle ../src/Block.js
+
+#+begin_src js
+export const Number = (value) => {
+    return {
+        type: "number",
+        value
+    }
+}
+#+end_src
+
+#+begin_src js
+export const Blank = () => {
+    return {
+        type: "blank"
+    }
+}
+#+end_src
+
+#+begin_src js
+export const String = (value) => {
+    return {
+        type: "string",
+        value
+    }
+}
+#+end_src

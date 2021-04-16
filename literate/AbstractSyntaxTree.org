@@ -1,0 +1,12 @@
+#+TITLE: Abstract Syntax Tree
+#+PROPERTY: header-args    :comments both :tangle ../src/AbstractSyntaxTree.js
+
+#+begin_src js
+export const AbstractSyntaxTree = function () {
+    return new AST();
+}
+
+function AST() {
+    this.root = true;
+}
+#+end_src
