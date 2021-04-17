@@ -54,10 +54,13 @@ npm run test-once # runs jest
 TBD: I'm still exploring the best way to do this, and even if this library will be useful at all.
 * Explanation for miscellaneous files
 ** =babel.config.js=
+:PROPERTIES:
+:header-args: :comments both :tangle babel.config.js
+:END:
 
 Line-by-line, starting at the beginning:
 
-#+begin_src js :tangle babel.config.js
+#+begin_src js
 module.exports = {
 #+end_src
 
@@ -65,7 +68,7 @@ Jest unfortunately does not work out of the box with =import= syntax.
 
 I solved this issue by adding a single dependency, =@babel/preset-env,= and a single file, =babel.config.js=:
 
-#+begin_src js :tangle babel.config.js
+#+begin_src js
     presets: [ "@babel/preset-env" ],
 #+end_src
 
@@ -75,22 +78,25 @@ When I started using async/await inside my Jest tests, I got this error:
 
 [[https://github.com/facebook/jest/issues/3126#issuecomment-723998132][This github comment]] suggested the following remedy:
 
-#+begin_src js :tangle babel.config.js
+#+begin_src js
     targets: { node: 'current' },
 #+end_src
 
 
 And finally:
 
-#+begin_src js :tangle babel.config.js
+#+begin_src js
 };
 #+end_src
 
 ** =jest.config.js=
+:PROPERTIES:
+:header-args: :comments both :tangle jest.config.js
+:END:
 
 Because my custom package =xstate-jest-tools= is not Babel-transformed yet, this project must specifically inform Jest's Babel transformer to *not* ignore it, and transform it as well:
 
-#+begin_src js :tangle jest.config.js
+#+begin_src js
 module.exports = {
     transformIgnorePatterns: [
         "node_modules/(?!xstate-jest-tools)"
