@@ -1,18 +1,77 @@
 #+TITLE: Parser
 #+PROPERTY: header-args    :comments both :tangle ../src/Parser.js
 
+Parser puts everything in this project together, providing functions which take in strings of source code and output entire parsed syntax trees or individual blocks, as the case may be.
+
 * Preamble
 
 #+begin_src js
-import * as Block from "../src/Block";
+import { interpret } from "xstate";
+import { stream, streamFile } from "./CharacterStream";
+import * as LexMachine from "./LexMachine.js";
+import * as ParseMachine from "./ParseMachine.js";
+import { InvertedPromise as Promise } from "./InvertedPromise";
 #+end_src
 
-* Actually parsing a stream of characters
+* Parse File
 
-I wrote code to pass just the simplest case first:
+To parse a file, the procedure is as follows:
 
 #+begin_src js
-export const single = (source) => {
-    if (source == "_") return Block.Blank();
+export const parseFile = async (source) => {
+#+end_src
+
+The result will be a promise, which resolves later:
+
+#+begin_src js
+    const resultPromise = Promise();
+#+end_src
+
+Instantiate the lexing and parsing machine interpreters which will form a pipeline.
+
+#+begin_src js
+    const lexInterpreter = interpret(LexMachine.init());
+    const parseInterpreter = interpret(ParseMachine.init());
+#+end_src
+
+Immediately start both interpreters.
+
+#+begin_src js
+    lexInterpreter.start();
+    parseInterpreter.start();
+#+end_src
+
+Now before sending anything, chain them together. First, when lexing finishes, send each token to the parser, in order. The tokens already have the shape of an XState event.
+
+After we send the last token, send a "DONE" event to signal completion. There is no way to know from the tokens themselves that it's got all of them.
+
+#+begin_src js
+    lexInterpreter.onDone(({ data }) => {
+        data.forEach(token =>
+            parseInterpreter.send(token));
+        parseInterpreter.send("DONE");
+    });
+#+end_src
+
+When the parser is complete, we're all done. Stop both interpreters and fulfill the result promise.
+
+#+begin_src js
+    parseInterpreter.onDone(({ data }) => {
+        lexInterpreter.stop();
+        parseInterpreter.stop();
+        resultPromise.resolve(data);
+    });
+#+end_src
+
+Now we're ready to start the pipeline. It begins with a stream of character events sent to the lexer.
+
+#+begin_src js
+    streamFile(source, (event) => lexInterpreter.send(event));
+#+end_src
+
+Return the produced tree, and that's it!
+
+#+begin_src js
+    return resultPromise;
 }
 #+end_src

@@ -29,13 +29,22 @@ export const definition = {
             on: {
                 [Token.ValueIdentifier.event] : {
                     actions: [ "addTokenToTape" ]
+                },
+                [Token.Number.event] : {
+                    actions: [ "addTokenToTape" ]
+                },
+                [Token.Blank.event] : {
+                    actions: [ "addTokenToTape" ]
                 }
             }
         },
-        done: { final : true }
+        done: {
+            type: "final",
+            data: (C) => C.tree
+        }
     },
     on : {
-        EOF: { target: "done" }
+        DONE: { target: "done" }
     }
 };
 #+end_src

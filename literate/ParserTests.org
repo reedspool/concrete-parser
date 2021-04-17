@@ -4,14 +4,38 @@
 * Preamble
 
 #+begin_src js
-import * as Parser from "../src/Parser";
-import * as Block from "../src/Block";
+import { parseFile } from "../src/Parser";
+import { AbstractSyntaxTree } from "../src/AbstractSyntaxTree";
 #+end_src
 
-* Tests
+* Parse File Tests
+
+Blank file.
 
 #+begin_src js
-it("Parses a single blank", () => {
+it.skip("Can parse a blank file and produce a blank tree", async () => {
+    const expected = AbstractSyntaxTree();
+    const parsed = await parseFile("");
+
+    expect(parsed).toEqual(expected);
+})
+#+end_src
+
+Blank-ish file, just filled with whitespace.
+
+#+begin_src js
+it("Can parse a file of only whitespace and produce a blank tree", async () => {
+    const expected = AbstractSyntaxTree();
+    const parsed = await parseFile("  \t  \n  ");
+
+    expect(parsed).toEqual(expected);
+})
+#+end_src
+
+* Parse Single Block Tests
+
+#+begin_src js
+it.skip("Parses a single blank", () => {
     const tree = Parser.single("_")
     expect(tree).toEqual(Block.Blank())
 })
