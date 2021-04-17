@@ -11,6 +11,11 @@ export const AbstractSyntaxTree = (...args) => new _AbstractSyntaxTree(...args);
 class _AbstractSyntaxTree {
     constructor() {
         this.root = true;
+        this.currentTape = [];
+    }
+
+    addToCurrentTape(token) {
+        this.currentTape.push(token);
     }
 }
 #+end_src
