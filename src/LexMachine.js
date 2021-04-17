@@ -198,7 +198,10 @@ export const definition = {
 // Definition:9 ends here
 
 // [[file:../literate/LexMachine.org::*Definition][Definition:10]]
-        done: { final : true }
+        done: {
+            type: "final",
+            data: (C) => C.tokens
+        }
     },
 };
 // Definition:10 ends here
@@ -257,5 +260,5 @@ export const config = {
 
 
 // [[file:../literate/LexMachine.org::*Initialize][Initialize:1]]
-export const init = () => Machine(definition, config);
+export const init = () => Machine(definition, config).withContext({});
 // Initialize:1 ends here

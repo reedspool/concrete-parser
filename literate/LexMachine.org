@@ -175,7 +175,10 @@ If we get an EOF here, it's an error because there was no numeric supplied after
 #+end_src
 
 #+begin_src js
-        done: { final : true }
+        done: {
+            type: "final",
+            data: (C) => C.tokens
+        }
     },
 };
 #+end_src

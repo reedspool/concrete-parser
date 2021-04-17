@@ -6,7 +6,8 @@
 #+begin_src js
 import * as LexMachine from "../src/LexMachine.js";
 import { Token } from "../src/LexicalToken";
-import { Machine } from "xstate";
+import { interpret, Machine } from "xstate";
+import { InvertedPromise as Promise } from "../src/InvertedPromise";
 import { TestInterpreter, toMatchState } from "xstate-jest-tools";
 import { streamFile } from "../src/CharacterStream";
 expect.extend({ toMatchState });
@@ -19,8 +20,8 @@ const lexMachine =
 
 let interpreter;
 
-const streamFileCallback = (type, char) => {
-    interpreter.send({ type, char });
+const streamFileCallback = (event) => {
+    interpreter.send(event);
 }
 
 beforeEach(() => {
@@ -201,5 +202,37 @@ it("Lexes whitespace separated tokens", () => {
             Token.Number.factory("3"),
             Token.Number.factory("33.44")
         ]);
+})
+#+end_src
+
+* XState Interpreter =onDone()=
+
+The machine should reach a final state if the input comes from =streamFile=.
+
+#+begin_src js
+it("XState interpreter onDone called successfully on empty file", async () => {
+    const interpreter = interpret(lexMachine);
+    const promise = Promise();
+    
+    interpreter.onDone(({ data }) => promise.resolve(data));
+    interpreter.start();
+
+    streamFile("", (event) => interpreter.send(event));
+    expect(await promise).toEqual([]);
+    interpreter.stop();
+})
+#+end_src
+
+#+begin_src js
+it("XState interpreter onDone called successfully on non-empty file", async () => {
+    const interpreter = interpret(lexMachine);
+    const promise = Promise();
+    
+    interpreter.onDone(({ data }) => promise.resolve(data));
+    interpreter.start();
+
+    streamFile("3", (event) => interpreter.send(event));
+    expect(await promise).toEqual([Token.Number.factory("3")]);
+    interpreter.stop();
 })
 #+end_src
