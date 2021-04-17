@@ -232,6 +232,6 @@ export const config = {
 * Initialize
 
 #+begin_src js
-export const init = () => Machine(definition, config);
+export const init = () => Machine(definition, config).withContext({});
 #+end_src
 
