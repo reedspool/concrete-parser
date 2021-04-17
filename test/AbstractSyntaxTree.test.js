@@ -19,6 +19,6 @@ describe("Basics", () => {
 it("Can add Token to tape", () => {
     const tree = AbstractSyntaxTree();
     tree.addToCurrentTape(Token.Number.factory("3"));
-    expect(tree.currentTape).toEqual([Token.Number.factory("3")]);
+    expect(tree.tape).toEqual([Token.Number.factory("3")]);
 })
 // No heading:2 ends here
