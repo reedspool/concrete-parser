@@ -1,0 +1,18 @@
+#+TITLE: Index Tests
+#+PROPERTY: header-args    :comments both :tangle ../test/index.test.js
+
+* Preamble
+
+#+begin_src js
+import { parseFile } from "../src/index";
+import * as Parser from "../src/Parser";
+#+end_src
+
+* Tests
+
+#+begin_src js
+it("Exposes everything it needs to.", () => {
+    expect(parseFile).toBeDefined();
+    expect(parseFile).toBe(Parser.parseFile);
+})
+#+end_src
