@@ -6,7 +6,8 @@ A parser for the Concrete programming language written with Emacs Org-Mode Liter
 
 * Note on Work In Progress
 This whole project is a work in progress. Because it is in the literate style and I want to record all my thoughts, you will find messes. Some sentences may stop mid-thought. I will be editing as I work, and I will try to make it clear when a thought and its corresponding code is complete.
-* Introduction
+
+* Motivation
 
 I wanted to write new a parser for my programming language, Concrete. Previously, I used PEG.js, which was great.
 
@@ -15,6 +16,7 @@ There are two main reasons I wanted to do this.
 First, I wanted to write a statechart-based parser with XState, so I could step through it like the step debugger.
 
 Second, I wanted to try a piecemeal parser, where blocks could be emitted as they are parsed. I'm not sure why I think that would be cool, but I wanted to try.
+
 * Installation
 
 Tests in this repo rely my package =xstate-jest-tools= which I have not yet published to NPM.
@@ -51,7 +53,6 @@ npm run test-once # runs jest
 
 TBD: I'm still exploring the best way to do this, and even if this library will be useful at all.
 * Explanation for miscellaneous files
-
 ** =babel.config.js=
 
 Line-by-line, starting at the beginning:
@@ -67,6 +68,17 @@ I solved this issue by adding a single dependency, =@babel/preset-env,= and a si
 #+begin_src js :tangle babel.config.js
     presets: [ "@babel/preset-env" ],
 #+end_src
+
+When I started using async/await inside my Jest tests, I got this error:
+
+=ReferenceError: regeneratorRuntime is not defined=
+
+[[https://github.com/facebook/jest/issues/3126#issuecomment-723998132][This github comment]] suggested the following remedy:
+
+#+begin_src js :tangle babel.config.js
+    targets: { node: 'current' },
+#+end_src
+
 
 And finally:
 
