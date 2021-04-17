@@ -5,11 +5,11 @@
 
 // If instantiated with a callback, then it acts just like built-in =Promise=.
 
-// Also, I don't like =new= so get rid of that.
+// The =new= keyword is optional. It works the same either way, since it always returns a new built-in =Promise=.
 
 
 // [[file:../literate/InvertedPromise.org::+begin_src js][No heading:1]]
-export const InvertedPromise = (callback) => {
+export const InvertedPromise = function (callback) {
     let resolve;
     let reject;
 

@@ -30,15 +30,6 @@ it("Reject or resolve after resolve has no effect", async () => {
 })
 // =.resolve()=:2 ends here
 
-// [[file:../literate/InvertedPromiseTests.org::*=.resolve()=][=.resolve()=:3]]
-it("Resolving a passed callback, it acts just like a built-in Promise", async () => {
-    const result = "test";
-    const promise = InvertedPromise((resolve) => resolve(result));
-
-    expect(await promise).toBe(result);
-})
-// =.resolve()=:3 ends here
-
 // =.reject()=
 
 
@@ -66,11 +57,32 @@ it("Reject or resolve after reject has no effect", async () => {
 })
 // =.reject()=:2 ends here
 
-// [[file:../literate/InvertedPromiseTests.org::*=.reject()=][=.reject()=:3]]
+// Acting like a built-in Promise
+
+
+// [[file:../literate/InvertedPromiseTests.org::*Acting like a built-in Promise][Acting like a built-in Promise:1]]
+it("Resolving a passed callback, it acts just like a built-in Promise", async () => {
+    const result = "test";
+    const promise = InvertedPromise((resolve) => resolve(result));
+
+    expect(await promise).toBe(result);
+})
+// Acting like a built-in Promise:1 ends here
+
+// [[file:../literate/InvertedPromiseTests.org::*Acting like a built-in Promise][Acting like a built-in Promise:2]]
 it("Rejecting a passed callback, it acts just like a built-in Promise", async () => {
     const result = new Error("test");
     const promise = InvertedPromise((_, reject) => reject(result));
 
     expect(await promise.catch(a => a)).toBe(result);
 })
-// =.reject()=:3 ends here
+// Acting like a built-in Promise:2 ends here
+
+// [[file:../literate/InvertedPromiseTests.org::*Acting like a built-in Promise][Acting like a built-in Promise:3]]
+it("Can use the new keyword with a callback", async () => {
+    const result = "test";
+    const promise = new InvertedPromise((resolve) => resolve(result));
+
+    expect(await promise).toBe(result);
+})
+// Acting like a built-in Promise:3 ends here
