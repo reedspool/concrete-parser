@@ -16,10 +16,10 @@ it("Takes a string of letters and streams characters", () => {
     stream(input, mock);
     expect(mock).toHaveBeenCalledTimes(input.length);
     // NthCalledWith is 1-based
-    expect(mock).toHaveBeenNthCalledWith(1, Kind.Alphabetic.event, "t");
-    expect(mock).toHaveBeenNthCalledWith(2, Kind.Alphabetic.event, "e");
-    expect(mock).toHaveBeenNthCalledWith(3, Kind.Alphabetic.event, "s");
-    expect(mock).toHaveBeenNthCalledWith(4, Kind.Alphabetic.event, "t");
+    expect(mock).toHaveBeenNthCalledWith(1, { type: Kind.Alphabetic.event, char: "t" });
+    expect(mock).toHaveBeenNthCalledWith(2, { type: Kind.Alphabetic.event, char: "e" });
+    expect(mock).toHaveBeenNthCalledWith(3, { type: Kind.Alphabetic.event, char: "s" });
+    expect(mock).toHaveBeenNthCalledWith(4, { type: Kind.Alphabetic.event, char: "t" });
 })
 #+end_src
 * Stream File
@@ -31,11 +31,11 @@ it("Takes a string of letters and streams characters plus EOF", () => {
     streamFile(input, mock);
     expect(mock).toHaveBeenCalledTimes(input.length + 1);
     // NthCalledWith is 1-based
-    expect(mock).toHaveBeenNthCalledWith(1, Kind.Alphabetic.event, "t");
-    expect(mock).toHaveBeenNthCalledWith(2, Kind.Alphabetic.event, "e");
-    expect(mock).toHaveBeenNthCalledWith(3, Kind.Alphabetic.event, "s");
-    expect(mock).toHaveBeenNthCalledWith(4, Kind.Alphabetic.event, "t");
-    expect(mock).toHaveBeenNthCalledWith(5, Kind.EOF.event, undefined);
+    expect(mock).toHaveBeenNthCalledWith(1, { type: Kind.Alphabetic.event, char: "t" });
+    expect(mock).toHaveBeenNthCalledWith(2, { type: Kind.Alphabetic.event, char: "e" });
+    expect(mock).toHaveBeenNthCalledWith(3, { type: Kind.Alphabetic.event, char: "s" });
+    expect(mock).toHaveBeenNthCalledWith(4, { type: Kind.Alphabetic.event, char: "t" });
+    expect(mock).toHaveBeenNthCalledWith(5, { type: Kind.EOF.event, char: undefined });
 })
 #+end_src
 * Unknown character
