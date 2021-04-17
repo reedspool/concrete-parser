@@ -58,7 +58,7 @@ Kind.Numeric = {
 };
 Kind.Whitespace = {
     event: "WHITESPACE",
-    group: [" ", "\t"]
+    group: [" ", "\t", "\n"]
 };
 Kind.Underscore = {
     event: "UNDERSCORE",

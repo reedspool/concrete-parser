@@ -77,7 +77,7 @@ it("All valid characters have a kind", () => {
     rangeHasKind("0", "9");
 
     // Now check all literals
-    ["_", ".", "!", "@", "[", "]", "(", ")", "{", "}", ":"]
+    ["_", ".", "!", "@", "[", "]", "(", ")", "{", "}", ":", " ", "\t", "\n"]
         .forEach(testCharHasKind);
 })
 // Kind:1 ends here
