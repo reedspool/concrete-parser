@@ -9,7 +9,7 @@ export const stream = (source, callback) => {
     const len = source.length;
     for (let i = 0; i < source.length; i++) {
         const char = source[i];
-        callback(getKind(char).event, char);
+        callback({ type: getKind(char).event, char });
     }
 }
 // No heading:1 ends here
@@ -22,7 +22,7 @@ export const stream = (source, callback) => {
 // [[file:../literate/CharacterStream.org::+begin_src js][No heading:2]]
 export const streamFile = (source, callback) => {
     stream(source, callback);
-    callback(Kind.EOF.event, undefined);
+    callback({ type: Kind.EOF.event, char: undefined });
 }
 // No heading:2 ends here
 
