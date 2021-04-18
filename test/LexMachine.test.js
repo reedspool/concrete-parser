@@ -7,7 +7,7 @@ import { Token } from "../src/LexicalToken";
 import { interpret, Machine } from "xstate";
 import { InvertedPromise as Promise } from "../src/InvertedPromise";
 import { TestInterpreter, toMatchState } from "xstate-jest-tools";
-import { streamFile } from "../src/CharacterStream";
+import { streamFile, stream } from "../src/CharacterStream";
 expect.extend({ toMatchState });
 
 const lexMachine =
@@ -18,7 +18,7 @@ const lexMachine =
 
 let interpreter;
 
-const streamFileCallback = (event) => {
+const streamCallback = (event) => {
     interpreter.send(event);
 }
 
@@ -42,7 +42,7 @@ it("Starts empty", () => {
 
 // [[file:../literate/LexMachineTests.org::*Blank][Blank:1]]
 it("Tokenizes just a blank", () => {
-    streamFile("_", streamFileCallback);
+    streamFile("_", streamCallback);
     expect(interpreter.S).toMatchState("done");
     expect(interpreter.C.tokens).toEqual(
         [ Token.Blank.factory() ]);
@@ -56,7 +56,7 @@ it("Tokenizes just a blank", () => {
 
 // [[file:../literate/LexMachineTests.org::*Value Identifier][Value Identifier:1]]
 it("Lexes a simple alphabetic ValueIdentifier", () => {
-    streamFile("abc", streamFileCallback);
+    streamFile("abc", streamCallback);
     expect(interpreter.S).toMatchState("done");
     expect(interpreter.C.tokens).toEqual(
         [ Token.ValueIdentifier.factory("abc") ]);
@@ -70,7 +70,7 @@ it("Lexes a simple alphabetic ValueIdentifier", () => {
 
 // [[file:../literate/LexMachineTests.org::*Value Identifier][Value Identifier:2]]
 it("Lexes a complex mixed ValueIdentifier", () => {
-    streamFile("a0_z", streamFileCallback);
+    streamFile("a0_z", streamCallback);
     expect(interpreter.S).toMatchState("done");
     expect(interpreter.C.tokens).toEqual(
         [ Token.ValueIdentifier.factory("a0_z") ]);
@@ -84,7 +84,7 @@ it("Lexes a complex mixed ValueIdentifier", () => {
 
 // [[file:../literate/LexMachineTests.org::*Address Identifier][Address Identifier:1]]
 it("Lexes a simple alphabetic AddressIdentifier", () => {
-    streamFile("@abc", streamFileCallback);
+    streamFile("@abc", streamCallback);
     expect(interpreter.S).toMatchState("done");
     expect(interpreter.C.tokens).toEqual(
         [ Token.AddressIdentifier.factory("@abc") ]);
@@ -98,7 +98,7 @@ it("Lexes a simple alphabetic AddressIdentifier", () => {
 
 // [[file:../literate/LexMachineTests.org::*Address Identifier][Address Identifier:2]]
 it("Lexes a complex mixed AddressIdentifier", () => {
-    streamFile("@a0_z", streamFileCallback);
+    streamFile("@a0_z", streamCallback);
     expect(interpreter.S).toMatchState("done");
     expect(interpreter.C.tokens).toEqual(
         [ Token.AddressIdentifier.factory("@a0_z") ]);
@@ -110,7 +110,7 @@ it("Lexes a complex mixed AddressIdentifier", () => {
 
 // [[file:../literate/LexMachineTests.org::*Label Identifiers][Label Identifiers:1]]
 it("Lexes a simple alphabetic LabelIdentifier", () => {
-    streamFile("abc:", streamFileCallback);
+    streamFile("abc:", streamCallback);
     expect(interpreter.S).toMatchState("done");
     expect(interpreter.C.tokens).toEqual(
         [ Token.LabelIdentifier.factory("abc:") ]);
@@ -124,7 +124,7 @@ it("Lexes a simple alphabetic LabelIdentifier", () => {
 
 // [[file:../literate/LexMachineTests.org::*Label Identifiers][Label Identifiers:2]]
 it("Lexes a complex mixed LabelIdentifier", () => {
-    streamFile("a0_z:", streamFileCallback);
+    streamFile("a0_z:", streamCallback);
     expect(interpreter.S).toMatchState("done");
     expect(interpreter.C.tokens).toEqual(
         [ Token.LabelIdentifier.factory("a0_z:") ]);
@@ -136,7 +136,7 @@ it("Lexes a complex mixed LabelIdentifier", () => {
 
 // [[file:../literate/LexMachineTests.org::*Call Identifiers][Call Identifiers:1]]
 it("Lexes a simple alphabetic CallIdentifier", () => {
-    streamFile("abc!", streamFileCallback);
+    streamFile("abc!", streamCallback);
     expect(interpreter.S).toMatchState("done");
     expect(interpreter.C.tokens).toEqual(
         [ Token.CallIdentifier.factory("abc!") ]);
@@ -150,7 +150,7 @@ it("Lexes a simple alphabetic CallIdentifier", () => {
 
 // [[file:../literate/LexMachineTests.org::*Call Identifiers][Call Identifiers:2]]
 it("Lexes a complex mixed CallIdentifier", () => {
-    streamFile("a0_z!", streamFileCallback);
+    streamFile("a0_z!", streamCallback);
     expect(interpreter.S).toMatchState("done");
     expect(interpreter.C.tokens).toEqual(
         [ Token.CallIdentifier.factory("a0_z!") ]);
@@ -163,7 +163,7 @@ it("Lexes a complex mixed CallIdentifier", () => {
 
 // [[file:../literate/LexMachineTests.org::*Numbers][Numbers:1]]
 it("Lexes an integer", () => {
-    streamFile("33554432", streamFileCallback);
+    streamFile("33554432", streamCallback);
     expect(interpreter.S).toMatchState("done");
     expect(interpreter.C.tokens).toEqual(
         [ Token.Number.factory("33554432") ]);
@@ -177,7 +177,7 @@ it("Lexes an integer", () => {
 
 // [[file:../literate/LexMachineTests.org::*Numbers][Numbers:2]]
 it("Lexes a decimal", () => {
-    streamFile("3355.4432", streamFileCallback);
+    streamFile("3355.4432", streamCallback);
     expect(interpreter.S).toMatchState("done");
     expect(interpreter.C.tokens).toEqual(
         [ Token.Number.factory("3355.4432") ]);
@@ -197,6 +197,42 @@ it("Lexing a decimal that ends with a period throws an error", () => {
     expect(fn).toThrowError();
 })
 // Numbers:3 ends here
+
+// Strings
+
+
+// [[file:../literate/LexMachineTests.org::*Strings][Strings:1]]
+it("Lexes a simple string", () => {
+    stream("\"", streamCallback);
+    expect(interpreter.S).toMatchState("string");
+    streamFile("meow\"", streamCallback);
+    expect(interpreter.S).toMatchState("done");
+    expect(interpreter.C.tokens).toEqual(
+        [ Token.String.factory("\"meow\"") ]);
+})
+// Strings:1 ends here
+
+// [[file:../literate/LexMachineTests.org::*Strings][Strings:2]]
+it("Lexes a string with everything except escapes", () => {
+    const input = "\"abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()+=~`<>,.[]{}|-_'?/\"";
+    expect(interpreter.S)
+    streamFile(input, streamCallback);
+    expect(interpreter.S).toMatchState("done");
+    expect(interpreter.C.tokens).toEqual(
+        [ Token.String.factory(input) ]);
+})
+// Strings:2 ends here
+
+// [[file:../literate/LexMachineTests.org::*Strings][Strings:3]]
+it("Lexes a string with an escaped double quote", () => {
+    const input = "\"\\\"\"";
+    expect(interpreter.S)
+    streamFile(input, streamCallback);
+    expect(interpreter.S).toMatchState("done");
+    expect(interpreter.C.tokens).toEqual(
+        [ Token.String.factory(input) ]);
+})
+// Strings:3 ends here
 
 // All together
 
@@ -219,7 +255,7 @@ it("Cannot be both AddressIdentifier and CallIdentifier", () => {
 
 // [[file:../literate/LexMachineTests.org::*All together][All together:2]]
 it("Lexes whitespace separated tokens", () => {
-    streamFile("ab _ z 3 33.44", streamFileCallback);
+    streamFile("ab _ z 3 33.44", streamCallback);
     expect(interpreter.S).toMatchState("done");
     expect(interpreter.C.tokens).toEqual(
         [
@@ -241,7 +277,7 @@ it("Lexes whitespace separated tokens", () => {
 it("XState interpreter onDone called successfully on empty file", async () => {
     const interpreter = interpret(lexMachine);
     const promise = Promise();
-    
+
     interpreter.onDone(({ data }) => promise.resolve(data));
     interpreter.start();
 
@@ -255,7 +291,7 @@ it("XState interpreter onDone called successfully on empty file", async () => {
 it("XState interpreter onDone called successfully on non-empty file", async () => {
     const interpreter = interpret(lexMachine);
     const promise = Promise();
-    
+
     interpreter.onDone(({ data }) => promise.resolve(data));
     interpreter.start();
 

@@ -7,6 +7,7 @@
 import * as ParseMachine from "../src/ParseMachine.js";
 import { Machine, interpret } from "xstate";
 import { Token } from "../src/LexicalToken";
+import { Block, Tape } from "../src/Block";
 import { InvertedPromise as Promise } from "../src/InvertedPromise";
 import { AbstractSyntaxTree } from "../src/AbstractSyntaxTree"
 import { TestInterpreter, toMatchState } from "xstate-jest-tools";
@@ -41,14 +42,129 @@ Now let's send  the simplest case, the blank block, =_=.
 
 #+begin_src js
 it("Parses just a blank", () => {
-    tree.addToCurrentTape(Token.Blank.factory());
-    
+    tree.appendBlock(Token.Blank.factory());
+
     interpreter.send(Token.Blank.factory());
     interpreter.send("DONE");
 
     expect(interpreter.S).toMatchState("done");
-    expect(interpreter.C.tree).toEqual(
-        tree)
+    expect(interpreter.C.tree).toEqual(tree);
+})
+#+end_src
+
+* Labels
+
+Labels are a quality of a tape. They name the specific cell of the block which comes after them.
+
+#+begin_src js
+it("Parses a blank with a label", () => {
+    tree.labelNextCell(Token.LabelIdentifier.factory("abcd"));
+    tree.appendBlock(Token.Blank.factory());
+    interpreter.send(Token.LabelIdentifier.factory("abcd"));
+    interpreter.send(Token.Blank.factory());
+    interpreter.send("DONE");
+
+    expect(interpreter.S).toMatchState("done");
+    expect(interpreter.C.tree).toEqual(tree);
+    expect(interpreter.C.tree.currentTape.labelsByIndex[0])
+        .toEqual("abcd");
+    expect(interpreter.C.tree.currentTape.labelsToIndex["abcd"])
+        .toEqual(0);
+})
+#+end_src
+
+#+begin_src js
+it("A label followed by a label is an error", () => {
+    interpreter.send(Token.LabelIdentifier.factory("abcd"));
+    expect(interpreter.S).toMatchState("ready.label.expectingBlock");
+    const fn = () =>
+        interpreter.send(Token.LabelIdentifier.factory("abcd"));
+
+    expect(fn).toThrowError();
+})
+#+end_src
+
+#+begin_src js
+it("A label at the end of a tape is an error", () => {
+    interpreter.send(Token.LabelIdentifier.factory("abcd"));
+    expect(interpreter.S).toMatchState("ready.label.expectingBlock");
+    const fn = () =>
+          interpreter.send("DONE");
+    expect(fn).toThrowError();
+})
+#+end_src
+
+* Tapes
+
+#+begin_src js
+it("Parses just an empty tape", () => {
+    tree.openTape();
+    tree.closeTape();
+    interpreter.send(Token.OpenTape.factory());
+    interpreter.send(Token.CloseTape.factory());
+    interpreter.send("DONE");
+
+    expect(interpreter.S).toMatchState("done");
+    expect(interpreter.C.tree).toEqual(tree);
+    expect(interpreter.C.tree.currentTape.cells).toHaveLength(1);
+    expect(interpreter.C.tree.currentTape.cells[0]).toEqual(Tape());
+})
+#+end_src
+
+Tape with params
+
+#+begin_src js
+it("Parses an empty tape with an empty param list", () => {
+    tree.openTape();
+    tree.closeTape();
+    interpreter.send(Token.OpenParams.factory());
+    expect(interpreter.S).toMatchState("ready.params.open");
+    interpreter.send(Token.CloseParams.factory());
+    expect(interpreter.S).toMatchState("ready.params.expectingTape");
+    interpreter.send(Token.OpenTape.factory());
+    interpreter.send(Token.CloseTape.factory());
+    interpreter.send("DONE");
+
+    expect(interpreter.S).toMatchState("done");
+    expect(interpreter.C.tree).toEqual(tree);
+    expect(interpreter.C.tree.currentTape.cells).toHaveLength(1);
+    expect(interpreter.C.tree.currentTape.cells[0]).toEqual(Tape());
+})
+#+end_src
+
+#+begin_src js
+it("Parses an empty tape with a param list", () => {
+    tree.addParamForNextTape(Token.ValueIdentifier.factory("meow"));
+    tree.addParamForNextTape(Token.LabelIdentifier.factory("abcd"));
+    tree.addParamForNextTape(Token.ValueIdentifier.factory("cheese"));
+    tree.openTape();
+    tree.closeTape();
+    interpreter.send(Token.OpenParams.factory());
+    expect(interpreter.S).toMatchState("ready.params.open");
+    interpreter.send(Token.ValueIdentifier.factory("meow"));
+    interpreter.send(Token.LabelIdentifier.factory("abcd"));
+    expect(interpreter.S).toMatchState("ready.params.expectingDefaultValue");
+    interpreter.send(Token.ValueIdentifier.factory("cheese"));
+    interpreter.send(Token.CloseParams.factory("meow"));
+    expect(interpreter.S).toMatchState("ready.params.expectingTape");
+    interpreter.send(Token.OpenTape.factory());
+    interpreter.send(Token.CloseTape.factory());
+    interpreter.send("DONE");
+
+    expect(interpreter.S).toMatchState("done");
+    expect(interpreter.C.tree).toEqual(tree);
+    expect(interpreter.C.tree.currentTape.cells).toHaveLength(1);
+})
+#+end_src
+
+#+begin_src js
+it("Duplicate parameter labels error", () => {
+    interpreter.send(Token.OpenParams.factory());
+    expect(interpreter.S).toMatchState("ready.params.open");
+    interpreter.send(Token.ValueIdentifier.factory("meow"));
+    const fn = () => interpreter.send(Token.LabelIdentifier.factory("meow"));
+
+    expect(fn).toThrowError();
 })
 #+end_src
 
@@ -74,8 +190,8 @@ it("XState interpreter onDone called successfully on empty file", async () => {
 it("XState interpreter onDone called successfully on non-empty file", async () => {
     const interpreter = interpret(parseMachine);
     const promise = Promise();
-    
-    tree.addToCurrentTape(Token.Number.factory("3"));
+
+    tree.appendBlock(Token.Number.factory("3"));
 
     interpreter.onDone(({ data }) => promise.resolve(data));
     interpreter.start();

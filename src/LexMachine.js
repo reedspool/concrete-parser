@@ -12,20 +12,24 @@ import { Kind } from "./CharacterStream";
 
 // Lexing is a great target for a simple state machine. An XState statechart is a little overboard for this problem, but why not? We're already going to use the super powers of a statechart for parsing, so might as well.
 
-// Here's the basic setup. Since we're dealing with text, we definitely want a strict machine. If we get the wrong kind of character at the wrong time, it will throw an error.
+// Here's the basic setup. Since we're dealing with text, and any character /might/ be valid, e.g. within a string, strict must be false to allow wildcard events, i.e. ="*"=.
 
 
 // [[file:../literate/LexMachine.org::*Definition][Definition:1]]
 export const definition = {
-    strict: true,
+    strict: false,
     id: "LexMachine",
 // Definition:1 ends here
 
 
 
-// First, messages we can receive at any time. We can /almost/ always receive an EOF, in which case we finalize the token we were reading and stop receiving more events.
+// First, messages we can receive at any time.
+
+// We can /almost/ always receive an EOF, in which case we finalize the token we were reading and stop receiving more events.
 
 // If there is a time we /cannot/ receive an EOF, we will override this EOF and make it throw an error. An example of a time when we cannot receive an EOF is when we receive a bunch of numbers, then a period, and no more numbers, e.g. =1523.=.
+
+// If we receive any character that's not caught by a more specific sub-state, that's a problem.
 
 
 // [[file:../literate/LexMachine.org::*Definition][Definition:2]]
@@ -37,13 +41,14 @@ export const definition = {
                 target: "done"
             },
             { target: "done" }
-        ]
+        ],
+        "*" : { actions: [ "badChar" ] }
     },
 // Definition:2 ends here
 
 
 
-// Standard statechart pattern, make it immediately initialize itself before accepting any more events. =initialize= will set up all internal structures.
+// Standard statechart pattern, make it immediately initialize itself before accepting any more events. The =initialize= action will set up all internal structures.
 
 
 // [[file:../literate/LexMachine.org::*Definition][Definition:3]]
@@ -78,6 +83,10 @@ export const definition = {
                     target: "number",
                 },
                 [Kind.Whitespace.event]: { actions: [ "noop" ] },
+                [Kind.DoubleQuote.event]: {
+                    target: "string",
+                    actions: [ "startStringToken" ]
+                },
             }
         },
 // Definition:4 ends here
@@ -197,14 +206,59 @@ export const definition = {
         },
 // Definition:9 ends here
 
+
+
+// A string starts and ends with a double quote, and almost any character can come in between.
+
+// If we get an EOF before the terminating double quote, that's a problem.
+
+
 // [[file:../literate/LexMachine.org::*Definition][Definition:10]]
+        string: {
+            on : {
+                [Kind.DoubleQuote.event] : {
+                    actions : [ "addCharToCurrentToken", "cleanupCurrentToken" ],
+                    target: "none"
+                },
+                [Kind.Backslash.event] : {
+                    actions : [ "addCharToCurrentToken" ],
+                    target: "escapeInString"
+                },
+                [Kind.EOF.event]: { actions: [ "badChar" ] },
+                "*" : { actions: [ "addCharToCurrentToken" ] }
+            }
+        },
+// Definition:10 ends here
+
+
+
+// If we receive a backslash, it's an escape. A double quote after a backslash does not terminate the string, it is just another character in the string.
+
+
+// [[file:../literate/LexMachine.org::*Definition][Definition:11]]
+        escapeInString : {
+            on : {
+                [Kind.DoubleQuote.event] : {
+                    actions : [ "addCharToCurrentToken" ],
+                    target : "string"
+                },
+                "*" : { actions: [ "badChar" ] }
+            }
+        },
+// Definition:11 ends here
+
+
+
+// Finally, the final state,
+
+// [[file:../literate/LexMachine.org::*Definition][Definition:12]]
         done: {
             type: "final",
             data: (C) => C.tokens
         }
     },
 };
-// Definition:10 ends here
+// Definition:12 ends here
 
 // Configuration
 
@@ -219,6 +273,9 @@ export const config = {
         }),
         startValueIdentifierToken: assign((C, E) => {
             C.currentToken = Token.ValueIdentifier.factory(E.char)
+        }),
+        startStringToken: assign((C, E) => {
+            C.currentToken = Token.String.factory(E.char)
         }),
         startAddressIdentifierToken: assign((C, E) => {
             C.currentToken = Token.AddressIdentifier.factory(E.char)
@@ -241,7 +298,7 @@ export const config = {
             C.currentToken.push(E.char);
         }),
         badChar: (C, E) => {
-            throw new Error("Bad Character");
+            throw new Error(`Bad Character: ${E.char}, type: ${E.type}`);
         },
         cleanupCurrentToken : assign((C, E) => {
             C.tokens.push(C.currentToken)

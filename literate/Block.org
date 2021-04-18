@@ -1,28 +1,43 @@
 #+TITLE: Block
 #+PROPERTY: header-args    :comments both :tangle ../src/Block.js
 
+A block is just a wrapper around a lexical token
+
 #+begin_src js
-export const Number = (value) => {
-    return {
-        type: "number",
-        value
+export const Block = (...args) => new _Block(...args);
+#+end_src
+
+#+begin_src js
+class _Block {
+    constructor(token) {
+        this.token = token;
     }
 }
 #+end_src
 
+A tape is a container of blocks
+
 #+begin_src js
-export const Blank = () => {
-    return {
-        type: "blank"
-    }
-}
+export const Tape = (...args) => new _Tape(...args);
 #+end_src
 
 #+begin_src js
-export const String = (value) => {
-    return {
-        type: "string",
-        value
+class _Tape {
+    constructor (isInline, params = []) {
+        this.cells = [];
+        this.params = params;
+        this.labelsByIndex = [];
+        this.labelsToIndex = {};
+        this.isInline = isInline;
+    }
+
+    append (block) {
+        this.cells.push(block);
+    }
+
+    setLabel (token, index) {
+        this.labelsByIndex[index] = token.original;
+        this.labelsToIndex[token.original] = index;
     }
 }
 #+end_src

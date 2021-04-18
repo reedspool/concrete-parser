@@ -1,37 +1,30 @@
-// Block test preamble
+// Preamble
 
 
-// [[file:../literate/BlockTests.org::*Block test preamble][Block test preamble:1]]
-import * as Block from "../src/Block";
-// Block test preamble:1 ends here
+// [[file:../literate/BlockTests.org::*Preamble][Preamble:1]]
+import { Block, Tape } from "../src/Block";
+import { Token } from "../src/LexicalToken";
+// Preamble:1 ends here
 
-// Unit Tests
+// Tests 
 
-// [[file:../literate/BlockTests.org::*Unit Tests][Unit Tests:1]]
-it("Blank", () => {
-    const block = Block.Blank();
-    expect(block).toEqual({
-        type : "blank"
-    })
+// [[file:../literate/BlockTests.org::*Tests][Tests:1]]
+it("Basic block", () => {
+    const token = Token.Blank.factory();
+    const block = Block(token);
+    expect(block.token).toEqual(token);
 })
-// Unit Tests:1 ends here
+// Tests:1 ends here
 
-// [[file:../literate/BlockTests.org::*Unit Tests][Unit Tests:2]]
-it("Numbers", () => {
-    const block = Block.Number(7.5);
-    expect(block).toEqual({
-        type : "number",
-        value: 7.5
-    })
+// [[file:../literate/BlockTests.org::*Tests][Tests:2]]
+it("Basic tape", () => {
+    const token = Token.Blank.factory();
+    const block = Block(token);
+    const tape = Tape();
+    
+    tape.append(block);
+    
+    expect(tape.cells.length).toBe(1);
+    expect(tape.cells[0]).toEqual(block);
 })
-// Unit Tests:2 ends here
-
-// [[file:../literate/BlockTests.org::*Unit Tests][Unit Tests:3]]
-it("String", () => {
-    const block = Block.String("Hello");
-    expect(block).toEqual({
-        type : "string",
-        value: "Hello"
-    })
-})
-// Unit Tests:3 ends here
+// Tests:2 ends here

@@ -30,6 +30,8 @@ export const streamFile = (source, callback) => {
 
 // A data structure mapping a name for a kind of character or range of characters to information about it
 
+// First is the "Unknown" kind, which is all characters which aren't valid syntax. These can still be valid inside of strings.
+
 // The "event" field of each kind is upper-cased so it fits the "type" field of our XState Machine events.
 
 // Then, we have to describe what characters belong to that kind, which we do in a few different ways.
@@ -43,6 +45,9 @@ export const streamFile = (source, callback) => {
 
 // [[file:../literate/CharacterStream.org::+begin_src js][No heading:3]]
 export const Kind = {};
+Kind.Unknown = {
+    event: "UNKNOWN",
+};
 Kind.Alphabetic = {
     event: "ALPHABETIC",
     group: [
@@ -59,6 +64,14 @@ Kind.Numeric = {
 Kind.Whitespace = {
     event: "WHITESPACE",
     group: [" ", "\t", "\n"]
+};
+Kind.DoubleQuote = {
+    event: "DOUBLE_QUOTE",
+    literal : "\"",
+};
+Kind.Backslash = {
+    event: "BACKSLASH",
+    literal : "\\",
 };
 Kind.Underscore = {
     event: "UNDERSCORE",
@@ -80,28 +93,28 @@ Kind.AtSign = {
     event: "AT_SIGN",
     literal: "@",
 };
-Kind.OpenFold = {
-    event: "OPEN_FOLD",
+Kind.OpenTape = {
+    event: "OPEN_TAPE",
     literal: "[",
 };
-Kind.CloseFold = {
-    event: "CLOSE_FOLD",
+Kind.CloseTape = {
+    event: "CLOSE_TAPE",
     literal: "]",
 };
-Kind.OpenArgs = {
-    event: "OPEN_ARGS",
+Kind.OpenParams = {
+    event: "OPEN_PARAMS",
     literal: "(",
 };
-Kind.CloseArgs = {
-    event: "CLOSE_ARGS",
+Kind.CloseParams = {
+    event: "CLOSE_PARAMS",
     literal: ")",
 };
-Kind.OpenInlineFold = {
-    event: "OPEN_INLINE_FOLD",
+Kind.OpenInlineTape = {
+    event: "OPEN_INLINE_TAPE",
     literal: "{",
 };
-Kind.CloseInlineFold = {
-    event: "CLOSE_INLINE_FOLD",
+Kind.CloseInlineTape = {
+    event: "CLOSE_INLINE_TAPE",
     literal: "}",
 };
 Kind.EOF = {
@@ -164,6 +177,6 @@ Object.entries(Kind).forEach(([ kind, { literal, group } ]) => {
 export const getKind = (char) => {
     const kind = charToKind[char];
     if (kind) return Kind[kind];
-    throw new Error(`Unreadable character: ${char}`);
+    return Kind.Unknown;
 }
 // No heading:6 ends here

@@ -10,9 +10,14 @@ First a class for a simple token. I hate the =new= keyword, so make a simple fac
 const SimpleToken = (...args) => new _SimpleToken(...args);
 
 class _SimpleToken {
-    constructor(type, original) {
+    constructor(name, type, original) {
         this.type = type;
+        this.name = name;
         this.original = original;
+    }
+
+    is(name) {
+        return this.name == name;
     }
 }
 #+end_src
@@ -54,12 +59,12 @@ Token.LabelIdentifier = {
     event: "LABEL_IDENTIFIER",
     factoryType: ExpandableToken,
 };
-Token.LabelIdentifier = {
-    event: "LABEL_IDENTIFIER",
-    factoryType: ExpandableToken,
-};
 Token.Number = {
     event: "NUMBER",
+    factoryType: ExpandableToken,
+};
+Token.String = {
+    event: "STRING",
     factoryType: ExpandableToken,
 };
 Token.Blank = {
@@ -67,47 +72,49 @@ Token.Blank = {
     factoryType: SimpleToken,
     literal: "_"
 };
-Token.OpenFold = {
-    event: "OPEN_FOLD",
+Token.OpenTape = {
+    event: "OPEN_TAPE",
     factoryType: SimpleToken,
     literal: "["
 };
-Token.CloseFold = {
-    event: "CLOSE_FOLD",
+Token.CloseTape = {
+    event: "CLOSE_TAPE",
     factoryType: SimpleToken,
     literal: "]"
 };
-Token.OpenArgs = {
-    event: "OPEN_ARGS",
+Token.OpenParams = {
+    event: "OPEN_PARAMS",
     factoryType: SimpleToken,
     literal: "("
 };
-Token.CloseArgs = {
-    event: "CLOSE_ARGS",
+Token.CloseParams = {
+    event: "CLOSE_PARAMS",
     factoryType: SimpleToken,
     literal: ")"
 };
-Token.OpenInlineFold = {
-    event: "OPEN_INLINE_FOLD",
+Token.OpenInlineTape = {
+    event: "OPEN_INLINE_TAPE",
     factoryType: SimpleToken,
     literal: "{"
 };
-Token.CloseInlineFold = {
-    event: "CLOSE_INLINE_FOLD",
+Token.CloseInlineTape = {
+    event: "CLOSE_INLINE_TAPE",
     factoryType: SimpleToken,
     literal: "}"
 };
 #+end_src
 
-Now construct the factories
+Now construct the factories and add other automatic information.
 
 #+begin_src js
 Object.entries(Token).forEach(([name, value]) => {
+    value.name = name;
+    
     if (value.factoryType == ExpandableToken) {
-        value.factory = (char) => ExpandableToken(value.event, char);
+        value.factory = (char) => ExpandableToken(name, value.event, char);
     }
     else if (value.factoryType == SimpleToken) {
-        value.factory = () => SimpleToken(value.event, value.literal);
+        value.factory = () => SimpleToken(name, value.event, value.literal);
     }
     else throw new Error(`Token ${name} has no factory`)
 })

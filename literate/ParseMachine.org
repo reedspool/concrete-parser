@@ -1,9 +1,7 @@
 #+TITLE: Parse Machine
 #+PROPERTY: header-args    :comments both :tangle ../src/ParseMachine.js
 
-It was time to dig in to the statechart implementation. I knew I wanted to send each character as a separate event to the machine.
-
-I started with a template Machine module from another XState project.
+Machine which accepts a sequence of Lexical Tokens as events and forms them into a tree structure. It will determine as much as possible from this sequential analysis to ease the job of the interpreter.
 
 * Preamble
 
@@ -11,10 +9,14 @@ I started with a template Machine module from another XState project.
 import { Machine } from "xstate";
 import { assign } from '@xstate/immer';
 import { Token } from "./LexicalToken"
+import { Block, Tape } from "./Block"
 import { AbstractSyntaxTree } from "./AbstractSyntaxTree"
 #+end_src
 
 * Definition
+
+Standard start to initialize itself with all necessary internal structure.
+
 #+begin_src js
 export const definition = {
     strict: true,
@@ -25,19 +27,192 @@ export const definition = {
             entry: [ "initialize" ],
             always: "ready"
         },
+#+end_src
+
+The machine spends its entire life cycle in the "ready" state, where it can accept anything valid.
+
+The "ready" state has sub-states which dictate different sequences of valid tokens by overriding/shadowing the accepted events.
+
+First, the simplest tokens are the ones which get added to the tape as blocks unto themselves. One could describe these as "atomic values".
+
+Almost all the top-level tokens except labels switch the label-substate back to "any", because they are valid labels.
+
+#+begin_src js
         ready : {
             on: {
                 [Token.ValueIdentifier.event] : {
+                    target: ".label.any",
+                    actions: [ "addTokenToTape" ]
+                },
+                [Token.AddressIdentifier.event] : {
+                    target: ".label.any",
+                    actions: [ "addTokenToTape" ]
+                },
+                [Token.CallIdentifier.event] : {
+                    target: ".label.any",
+                    actions: [ "addTokenToTape" ]
+                },
+                [Token.String.event] : {
+                    target: ".label.any",
                     actions: [ "addTokenToTape" ]
                 },
                 [Token.Number.event] : {
+                    target: ".label.any",
                     actions: [ "addTokenToTape" ]
                 },
                 [Token.Blank.event] : {
+                    target: ".label.any",
                     actions: [ "addTokenToTape" ]
+                },
+#+end_src
+
+If we get a label, it must label a block, so we move into the sub-state in which a block must come next.
+
+#+begin_src js
+                [Token.LabelIdentifier.event] : {
+                    target: ".label.expectingBlock",
+                    actions: [ "labelNextBlock" ]
+                },
+#+end_src
+
+Tokens which open and close tapes are a little more complicated than the simple block tokens.
+
+#+begin_src js
+                [Token.OpenTape.event] : {
+                    target: ".label.any",
+                    actions: [ "openTape" ]
+                },
+                [Token.CloseTape.event] : {
+                    actions: [ "closeTape" ]
+                },
+                [Token.OpenInlineTape.event] : {
+                    target: ".label.any",
+                    actions: [ "openInlineTape" ]
+                },
+                [Token.CloseInlineTape.event] : {
+                    actions: [ "closeInlineTape" ]
+                },
+#+end_src
+
+Parameter lists are one of the most complicated constructs in the syntax, so they deserve their own sub-state.
+
+#+begin_src js
+                [Token.OpenParams.event] : {
+                    target: [ ".label.any", ".params.open" ],
+                    actions: [ "openParams" ]
+                },
+            },
+#+end_src
+
+Now we describe the sub-states. First, the parameters' sub-state. Basic parameters are labels, which will point to the argument in the same position. When a ValueIdentifier is present alone as a parameter, its value is used as if it were a label.
+
+The use of ValueIdentifiers in parameter lists as labels can be confusing since LabelIdentifiers also appear in parameter lists, when they describe default values. When a LabelIdentifier appears, a value block /must/ follow it to fulfill the default value, although that might be a blank block.
+
+Two labels in a parameter list cannot be exactly the same. This logic is handled in the AbstractSyntaxTree implementation.
+
+Most of the time, this sub-state is in the "not" state, because most of a program is not within a parameter list. This sub-state does not change anything about the parent "ready" state.
+
+Note the use of the wildcard event, ="*"=, which overrides/shadows /all/ events. Many possible tokens are invalid in a parameter list.
+
+#+begin_src js
+            type: "parallel",
+            states : {
+                params : {
+                    initial: "not",
+                    states : {
+                        not: {},
+                        open: {
+                            on: {
+                                [Token.CloseParams.event] : {
+                                    target: "expectingTape"
+                                },
+                                [Token.ValueIdentifier.event] : {
+                                    actions: [ "addTokenToParams" ]
+                                },
+                                [Token.LabelIdentifier.event] : {
+                                    target: "expectingDefaultValue",
+                                    actions: [ "addTokenToParams" ]
+                                },
+                                "*" : { actions: [ "invalidParamTokenError" ] }
+                            }
+                        },
+#+end_src
+
+The list of explicit token events here are all the valid tokens which fulfill default values.
+
+In the future, I would like to accept complex sequences like tapes as default parameters.
+
+#+begin_src js
+                        expectingDefaultValue : {
+                            on: {
+                                [Token.Number.event] : {
+                                    target: "open",
+                                    actions: [ "addTokenToParams" ]
+                                },
+                                [Token.String.event] : {
+                                    target: "open",
+                                    actions: [ "addTokenToParams" ]
+                                },
+                                [Token.AddressIdentifier.event] : {
+                                    target: "open",
+                                    actions: [ "addTokenToParams" ]
+                                },
+                                [Token.ValueIdentifier.event] : {
+                                    target: "open",
+                                    actions: [ "addTokenToParams" ]
+                                },
+                                [Token.CloseParams.event] : {
+                                    actions : [ "unfulfilledDefaultValueError" ]
+                                },
+                                "*" : {
+                                    actions: [ "unfulfilledDefaultValueError" ]
+                                },
+                            }
+                        },
+#+end_src
+
+After a parameter list, the next token /must/ be an "open tape", =[=.
+
+#+begin_src js
+                        expectingTape: {
+                            on: {
+                                [Token.OpenTape.event] : {
+                                    target: "not",
+                                    actions: [ "openTape" ]
+                                },
+                                "*" : {
+                                    actions : [ "paramsWithoutTapeError" ]
+                                }
+                            }
+                        },
+                    },
+                },
+#+end_src
+
+The next sub-state is the label sub-state. This simply describes two invalid cases for subsequent tokens after labels. First, there cannot be multiple labels consecutively, a block must come between. Second, a =DONE= event after a label, but before another block which the label points to, is an error.
+
+#+begin_src js
+                label: {
+                    initial: "any",
+                    states: {
+                        any : {},
+                        expectingBlock : {
+                            on : {
+                                DONE : { actions: "labelWithNoBlockError" },
+                                [Token.LabelIdentifier.event] : {
+                                    actions: "consecutiveLabelsError"
+                                },
+                            }
+                        }
+                    },
                 }
             }
         },
+#+end_src
+
+We can receive =DONE= event at almost any time, at which point the machine finalizes. Once in the "done" state, the machine cannot receive any more events.
+
+#+begin_src js
         done: {
             type: "final",
             data: (C) => C.tree
@@ -58,8 +233,42 @@ export const config = {
             C.tree = AbstractSyntaxTree();
         }),
         addTokenToTape: assign((C, E) => {
-            C.tree.addToCurrentTape(E);
-        })
+            C.tree.appendBlock(E);
+        }),
+        labelNextBlock: assign((C, E) => {
+            C.tree.labelNextCell(E)
+        }),
+        consecutiveLabelsError : (C, E) => {
+            throw new Error("Cannot have two labels in a row");
+        },
+        labelWithNoBlockError : (C, E) => {
+            throw new Error("Cannot have a label at the end of a tape");
+        },
+        unfulfilledDefaultValueError : (C, E) => {
+            throw new Error("A string, number, blank, value identifier, or address must come after a label identifier in a parameter list");
+        },
+        paramsWithoutTapeError : (C, E) => {
+            throw new Error("After params list, next token must be \"[\"");
+        },
+        invalidParamTokenError : (C, E) => {
+            throw new Error("Invalid token in params list")
+        },
+        addTokenToParams : assign((C, E) => {
+            C.tree.addParamForNextTape(E);
+        }),
+        openTape : assign((C, E) => {
+            C.tree.openTape();
+        }),
+        closeTape : assign((C, E) => {
+            C.tree.closeTape();
+        }),
+        openInlineTape : assign((C, E) => {
+            C.tree.openTape(true);
+        }),
+        closeInlineTape : assign((C, E) => {
+            // Closing an inline tape is the same as a normal one
+            C.tree.closeTape();
+        }),
     },
     guards : {}
 };
