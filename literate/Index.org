@@ -5,4 +5,5 @@ This file will be the entry point for this module. All it does is expose, i.e. e
 
 #+begin_src js
 export { parseFile } from "./Parser";
+export { Category } from "./Block";
 #+end_src

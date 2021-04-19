@@ -4,8 +4,9 @@
 * Preamble
 
 #+begin_src js
-import { parseFile } from "../src/index";
+import { parseFile, Category } from "../src/index";
 import * as Parser from "../src/Parser";
+import * as Block from "../src/Block";
 #+end_src
 
 * Tests
@@ -14,5 +15,7 @@ import * as Parser from "../src/Parser";
 it("Exposes everything it needs to.", () => {
     expect(parseFile).toBeDefined();
     expect(parseFile).toBe(Parser.parseFile);
+    expect(Category).toBeDefined();
+    expect(Category).toBe(Block.Category);
 })
 #+end_src
