@@ -265,7 +265,7 @@ export const config = {
             C.currentToken.push(E.char);
         }),
         badChar: (C, E) => {
-            throw new Error(`Bad Character: ${E.char}, type: ${E.type}`);
+            throw new Error(`Bad Character: "${E.char}", type: ${E.type}`);
         },
         cleanupCurrentToken : assign((C, E) => {
             C.tokens.push(C.currentToken)
