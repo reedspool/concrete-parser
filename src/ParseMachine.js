@@ -42,27 +42,27 @@ export const definition = {
             on: {
                 [Token.ValueIdentifier.event] : {
                     target: ".label.any",
-                    actions: [ "addTokenToTape" ]
+                    actions: [ "addValueBlockToTape" ]
                 },
                 [Token.AddressIdentifier.event] : {
                     target: ".label.any",
-                    actions: [ "addTokenToTape" ]
+                    actions: [ "addValueBlockToTape" ]
                 },
                 [Token.CallIdentifier.event] : {
                     target: ".label.any",
-                    actions: [ "addTokenToTape" ]
+                    actions: [ "addValueBlockToTape" ]
                 },
                 [Token.String.event] : {
                     target: ".label.any",
-                    actions: [ "addTokenToTape" ]
+                    actions: [ "addValueBlockToTape" ]
                 },
                 [Token.Number.event] : {
                     target: ".label.any",
-                    actions: [ "addTokenToTape" ]
+                    actions: [ "addValueBlockToTape" ]
                 },
                 [Token.Blank.event] : {
                     target: ".label.any",
-                    actions: [ "addTokenToTape" ]
+                    actions: [ "addValueBlockToTape" ]
                 },
 // Definition:2 ends here
 
@@ -257,8 +257,11 @@ export const config = {
         initialize: assign((C, E) => {
             C.tree = AbstractSyntaxTree();
         }),
-        addTokenToTape: assign((C, E) => {
-            C.tree.appendBlock(E);
+        addValueBlockToTape: assign((C, E) => {
+            C.tree.appendValueBlock(E);
+        }),
+        addOpBlockToTape: assign((C, E) => {
+            C.tree.appendOpBlock(E);
         }),
         labelNextBlock: assign((C, E) => {
             C.tree.labelNextCell(E)

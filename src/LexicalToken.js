@@ -10,8 +10,8 @@ class _SimpleToken {
         this.original = original;
     }
 
-    is(name) {
-        return this.name == name;
+    is(token) {
+        return this.name == token.name;
     }
 }
 // Token Factories:1 ends here

@@ -42,7 +42,7 @@ Now let's send  the simplest case, the blank block, =_=.
 
 #+begin_src js
 it("Parses just a blank", () => {
-    tree.appendBlock(Token.Blank.factory());
+    tree.appendValueBlock(Token.Blank.factory());
 
     interpreter.send(Token.Blank.factory());
     interpreter.send("DONE");
@@ -59,7 +59,7 @@ Labels are a quality of a tape. They name the specific cell of the block which c
 #+begin_src js
 it("Parses a blank with a label", () => {
     tree.labelNextCell(Token.LabelIdentifier.factory("abcd"));
-    tree.appendBlock(Token.Blank.factory());
+    tree.appendValueBlock(Token.Blank.factory());
     interpreter.send(Token.LabelIdentifier.factory("abcd"));
     interpreter.send(Token.Blank.factory());
     interpreter.send("DONE");
@@ -191,7 +191,7 @@ it("XState interpreter onDone called successfully on non-empty file", async () =
     const interpreter = interpret(parseMachine);
     const promise = Promise();
 
-    tree.appendBlock(Token.Number.factory("3"));
+    tree.appendValueBlock(Token.Number.factory("3"));
 
     interpreter.onDone(({ data }) => promise.resolve(data));
     interpreter.start();

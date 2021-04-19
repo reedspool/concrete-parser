@@ -5,7 +5,7 @@
 // [[file:../literate/AbstractSyntaxTreeTests.org::+begin_src js][No heading:1]]
 import { AbstractSyntaxTree } from "../src/AbstractSyntaxTree"
 import { Token } from "../src/LexicalToken"
-import { Block, Tape } from "../src/Block"
+import { ValueBlock, Tape } from "../src/Block"
 
 describe("Basics", () => {
     it("Can be initialized", () => {
@@ -19,8 +19,8 @@ describe("Basics", () => {
 // [[file:../literate/AbstractSyntaxTreeTests.org::+begin_src js][No heading:2]]
 it("Can add Token to tape", () => {
     const tree = AbstractSyntaxTree();
-    tree.appendBlock(Token.Number.factory("3"));
+    tree.appendValueBlock(Token.Number.factory("3"));
     expect(tree.tape.cells).toEqual(
-        [Block(Token.Number.factory("3"))]);
+        [ValueBlock(Token.Number.factory("3"))]);
 })
 // No heading:2 ends here

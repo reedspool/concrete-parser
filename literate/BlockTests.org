@@ -4,28 +4,39 @@
 * Preamble
 
 #+begin_src js
-import { Block, Tape } from "../src/Block";
+import { ValueBlock, Tape, OpBlock, Category } from "../src/Block";
 import { Token } from "../src/LexicalToken";
 #+end_src
 
 * Tests 
 #+begin_src js
-it("Basic block", () => {
+it("Basic value block", () => {
     const token = Token.Blank.factory();
-    const block = Block(token);
+    const block = ValueBlock(token);
     expect(block.token).toEqual(token);
+    expect(block.is(Category.Value)).toBe(true);
+})
+#+end_src
+
+#+begin_src js
+it("Basic op block", () => {
+    const token = Token.CallIdentifier.factory("abcd!");
+    const block = OpBlock(token);
+    expect(block.token).toEqual(token);
+    expect(block.is(Category.Op)).toBe(true);
 })
 #+end_src
 
 #+begin_src js
 it("Basic tape", () => {
     const token = Token.Blank.factory();
-    const block = Block(token);
+    const block = ValueBlock(token);
     const tape = Tape();
     
     tape.append(block);
     
     expect(tape.cells.length).toBe(1);
     expect(tape.cells[0]).toEqual(block);
+    expect(tape.is(Category.Value)).toBe(true);
 })
 #+end_src

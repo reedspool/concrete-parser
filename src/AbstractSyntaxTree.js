@@ -5,7 +5,7 @@
 
 
 // [[file:../literate/AbstractSyntaxTree.org::+begin_src js][No heading:1]]
-import { Block, Tape } from "../src/Block";
+import { ValueBlock, OpBlock, Tape } from "../src/Block";
 import { Token } from "../src/LexicalToken";
 // No heading:1 ends here
 
@@ -22,9 +22,11 @@ class _AbstractSyntaxTree {
         this.unfinishedParameterList = [];
     }
 
-    appendBlock(token) {
-        this.tape.append(Block(token));
-    }
+    _appendBlock(block) { this.tape.append(block); }
+
+    appendValueBlock(token) { this._appendBlock(ValueBlock(token)); }
+    
+    appendOpBlock(token) { this._appendBlock(OpBlock(token)); }
 
     labelNextCell(token) {
         this.tape.setLabel(
@@ -48,12 +50,12 @@ class _AbstractSyntaxTree {
     addParamForNextTape(token) {
         const last = this.unfinishedParameterList.slice(-1)[0];
         
-        if (last && last.label.is(Token.LabelIdentifier.name) && ! last.default) {
+        if (last && last.label.is(Token.LabelIdentifier) && ! last.default) {
             // If the last was a label, this is the default value for it
             last.default = token;
         }
-        else if (token.is(Token.LabelIdentifier.name) ||
-                token.is(Token.ValueIdentifier.name)) {
+        else if (token.is(Token.LabelIdentifier) ||
+                token.is(Token.ValueIdentifier)) {
             if (this.parameterNameAlreadyUsed(token)) {
                 throw new Error(`Duplicate parameter names not allowed: ${token.original}`);
             }

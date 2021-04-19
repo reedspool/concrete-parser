@@ -44,7 +44,7 @@ it("Starts empty", () => {
 
 // [[file:../literate/ParseMachineTests.org::*Simple][Simple:2]]
 it("Parses just a blank", () => {
-    tree.appendBlock(Token.Blank.factory());
+    tree.appendValueBlock(Token.Blank.factory());
 
     interpreter.send(Token.Blank.factory());
     interpreter.send("DONE");
@@ -62,7 +62,7 @@ it("Parses just a blank", () => {
 // [[file:../literate/ParseMachineTests.org::*Labels][Labels:1]]
 it("Parses a blank with a label", () => {
     tree.labelNextCell(Token.LabelIdentifier.factory("abcd"));
-    tree.appendBlock(Token.Blank.factory());
+    tree.appendValueBlock(Token.Blank.factory());
     interpreter.send(Token.LabelIdentifier.factory("abcd"));
     interpreter.send(Token.Blank.factory());
     interpreter.send("DONE");
@@ -199,7 +199,7 @@ it("XState interpreter onDone called successfully on non-empty file", async () =
     const interpreter = interpret(parseMachine);
     const promise = Promise();
 
-    tree.appendBlock(Token.Number.factory("3"));
+    tree.appendValueBlock(Token.Number.factory("3"));
 
     interpreter.onDone(({ data }) => promise.resolve(data));
     interpreter.start();
