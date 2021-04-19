@@ -111,6 +111,10 @@ export const definition = {
                     target: "none",
                     actions : [ "cleanupCurrentToken"]
                 },
+                [Kind.Comma.event] : {
+                    target: "none",
+                    actions: [ "cleanupCurrentToken", "insertCommaToken" ]
+                },
                 [Kind.Colon.event] : [
                     {
                         cond: "isCurrentTokenValueIdentifier",
@@ -174,7 +178,11 @@ export const definition = {
                 [Kind.Whitespace.event] : {
                     target: "none",
                     actions : [ "cleanupCurrentToken"]
-                }
+                },
+                [Kind.Comma.event] : {
+                    target: "none",
+                    actions: [ "cleanupCurrentToken", "insertCommaToken" ]
+                },
             }
         },
 // Definition:8 ends here
@@ -202,7 +210,11 @@ export const definition = {
                 [Kind.Whitespace.event] : {
                     target: "none",
                     actions : [ "cleanupCurrentToken"]
-                }
+                },
+                [Kind.Comma.event] : {
+                    target: "none",
+                    actions: [ "cleanupCurrentToken", "insertCommaToken" ]
+                },
             }
         },
 // Definition:9 ends here

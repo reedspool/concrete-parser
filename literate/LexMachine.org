@@ -100,6 +100,10 @@ Note: address and colon identifiers cannot end with an exclamation.
                     target: "none",
                     actions : [ "cleanupCurrentToken"]
                 },
+                [Kind.Comma.event] : {
+                    target: "none",
+                    actions: [ "cleanupCurrentToken", "insertCommaToken" ]
+                },
                 [Kind.Colon.event] : [
                     {
                         cond: "isCurrentTokenValueIdentifier",
@@ -154,7 +158,11 @@ Numbers contain only numeric characters and optionally one period. If it has one
                 [Kind.Whitespace.event] : {
                     target: "none",
                     actions : [ "cleanupCurrentToken"]
-                }
+                },
+                [Kind.Comma.event] : {
+                    target: "none",
+                    actions: [ "cleanupCurrentToken", "insertCommaToken" ]
+                },
             }
         },
 #+end_src
@@ -179,7 +187,11 @@ If we get an EOF here, it's an error because there was no numeric supplied after
                 [Kind.Whitespace.event] : {
                     target: "none",
                     actions : [ "cleanupCurrentToken"]
-                }
+                },
+                [Kind.Comma.event] : {
+                    target: "none",
+                    actions: [ "cleanupCurrentToken", "insertCommaToken" ]
+                },
             }
         },
 #+end_src
