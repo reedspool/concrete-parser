@@ -69,9 +69,9 @@ it("Parses a blank with a label", () => {
 
     expect(interpreter.S).toMatchState("done");
     expect(interpreter.C.tree).toEqual(tree);
-    expect(interpreter.C.tree.currentTape.labelsByIndex[0])
+    expect(interpreter.C.tree.tape.labelsByIndex[0])
         .toEqual("abcd");
-    expect(interpreter.C.tree.currentTape.labelsToIndex["abcd"])
+    expect(interpreter.C.tree.tape.labelsToIndex["abcd"])
         .toEqual(0);
 })
 // Labels:1 ends here
@@ -110,8 +110,8 @@ it("Parses just an empty tape", () => {
 
     expect(interpreter.S).toMatchState("done");
     expect(interpreter.C.tree).toEqual(tree);
-    expect(interpreter.C.tree.currentTape.cells).toHaveLength(1);
-    expect(interpreter.C.tree.currentTape.cells[0]).toEqual(Tape());
+    expect(interpreter.C.tree.tape.cells).toHaveLength(1);
+    expect(interpreter.C.tree.tape.cells[0]).toEqual(Tape());
 })
 // Tapes:1 ends here
 
@@ -134,8 +134,8 @@ it("Parses an empty tape with an empty param list", () => {
 
     expect(interpreter.S).toMatchState("done");
     expect(interpreter.C.tree).toEqual(tree);
-    expect(interpreter.C.tree.currentTape.cells).toHaveLength(1);
-    expect(interpreter.C.tree.currentTape.cells[0]).toEqual(Tape());
+    expect(interpreter.C.tree.tape.cells).toHaveLength(1);
+    expect(interpreter.C.tree.tape.cells[0]).toEqual(Tape());
 })
 // Tapes:2 ends here
 
@@ -160,7 +160,7 @@ it("Parses an empty tape with a param list", () => {
 
     expect(interpreter.S).toMatchState("done");
     expect(interpreter.C.tree).toEqual(tree);
-    expect(interpreter.C.tree.currentTape.cells).toHaveLength(1);
+    expect(interpreter.C.tree.tape.cells).toHaveLength(1);
 })
 // Tapes:3 ends here
 

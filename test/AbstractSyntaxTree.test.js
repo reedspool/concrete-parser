@@ -20,7 +20,7 @@ describe("Basics", () => {
 it("Can add Token to tape", () => {
     const tree = AbstractSyntaxTree();
     tree.appendBlock(Token.Number.factory("3"));
-    expect(tree.currentTape.cells).toEqual(
+    expect(tree.tape.cells).toEqual(
         [Block(Token.Number.factory("3"))]);
 })
 // No heading:2 ends here

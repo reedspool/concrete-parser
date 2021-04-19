@@ -16,23 +16,23 @@ export const AbstractSyntaxTree = (...args) => new _AbstractSyntaxTree(...args);
 class _AbstractSyntaxTree {
     constructor(isRoot) {
         this.root = isRoot;
-        this.currentTape = Tape();
+        this.tape = Tape();
         this.unfinishedTapeStack = [];
         this.unfinishedParameterList = [];
     }
 
     appendBlock(token) {
-        this.currentTape.append(Block(token));
+        this.tape.append(Block(token));
     }
 
     labelNextCell(token) {
-        this.currentTape.setLabel(
-            token, this.currentTape.cells.length);
+        this.tape.setLabel(
+            token, this.tape.cells.length);
     }
 
     openTape(isInline) {
-        this.unfinishedTapeStack.push(this.currentTape);
-        this.currentTape = Tape(isInline, this.unfinishedParameterList);
+        this.unfinishedTapeStack.push(this.tape);
+        this.tape = Tape(isInline, this.unfinishedParameterList);
         // Reset the parameter list for next time
         this.unfinishedParameterList = [];
     }
@@ -40,8 +40,8 @@ class _AbstractSyntaxTree {
     // Pop the stack and add the tape we have been building to it
     closeTape() {
         const tape = this.unfinishedTapeStack.pop();
-        tape.append(this.currentTape);
-        this.currentTape = tape;
+        tape.append(this.tape);
+        this.tape = tape;
     }
 
     addParamForNextTape(token) {
