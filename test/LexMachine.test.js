@@ -49,6 +49,18 @@ it("Tokenizes just a blank", () => {
 })
 // Blank:1 ends here
 
+// Comma
+
+
+// [[file:../literate/LexMachineTests.org::*Comma][Comma:1]]
+it("Tokenizes just a comma", () => {
+    streamFile(",", streamCallback);
+    expect(interpreter.S).toMatchState("done");
+    expect(interpreter.C.tokens).toEqual(
+        [ Token.Comma.create() ]);
+})
+// Comma:1 ends here
+
 // Value Identifier
 
 // Okay what about a complete identifier?

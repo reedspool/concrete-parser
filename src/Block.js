@@ -67,6 +67,7 @@ export const Tape = (...args) => new _Tape(...args);
 class _Tape {
     constructor (isInline, params = []) {
         this.cells = [];
+        this.commas = {};
         this.params = params;
         this.labelsByIndex = [];
         this.labelsToIndex = {};
@@ -78,6 +79,10 @@ class _Tape {
 
     append (block) {
         this.cells.push(block);
+    }
+
+    appendComma () {
+        this.commas[this.cells.length] = true;
     }
 
     setLabel (token, index) {

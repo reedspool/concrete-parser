@@ -70,6 +70,11 @@ Token.Blank = {
     factory: SimpleToken,
     literal: "_"
 };
+Token.Comma = {
+    event: "COMMA",
+    factory: SimpleToken,
+    literal: ","
+};
 Token.OpenTape = {
     event: "OPEN_TAPE",
     factory: SimpleToken,

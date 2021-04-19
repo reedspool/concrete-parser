@@ -66,6 +66,15 @@ Almost all the top-level tokens except labels switch the label-substate back to 
                 },
 #+end_src
 
+Commas are not blocks, they bind value blocks together. So they don't add a block to the tape.
+
+#+begin_src js
+                [Token.Comma.event] : {
+                    target: ".label.any",
+                    actions: [ "addCommaToTape" ]
+                },
+#+end_src
+
 If we get a label, it must label a block, so we move into the sub-state in which a block must come next.
 
 #+begin_src js
@@ -237,6 +246,9 @@ export const config = {
         }),
         addOpBlockToTape: assign((C, E) => {
             C.tree.appendOpBlock(E);
+        }),
+        addCommaToTape: assign((C, E) => {
+            C.tree.appendComma();
         }),
         labelNextBlock: assign((C, E) => {
             C.tree.labelNextCell(E)

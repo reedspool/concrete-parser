@@ -94,6 +94,28 @@ it("A label at the end of a tape is an error", () => {
 })
 #+end_src
 
+* Commas
+
+#+begin_src js
+it("Parses some value blocks with commas", () => {
+    tree.appendComma();
+    tree.appendValueBlock(Token.Blank.create());
+    tree.appendValueBlock(Token.Blank.create());
+    tree.appendComma();
+    interpreter.send(Token.Comma.create());
+    interpreter.send(Token.Blank.create());
+    interpreter.send(Token.Blank.create());
+    interpreter.send(Token.Comma.create());
+    interpreter.send("DONE");
+
+    expect(interpreter.S).toMatchState("done");
+    expect(interpreter.C.tree).toEqual(tree);
+    expect(interpreter.C.tree.tape.cells).toHaveLength(2);
+    expect(interpreter.C.tree.tape.commas[0]).toBeTruthy();
+    expect(interpreter.C.tree.tape.commas[2]).toBeTruthy();
+})
+#+end_src
+
 * Tapes
 
 #+begin_src js

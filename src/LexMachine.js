@@ -71,6 +71,7 @@ export const definition = {
         none : {
             on: {
                 [Kind.Underscore.event] : { actions : ["insertBlankToken"] },
+                [Kind.Comma.event] : { actions: ["insertCommaToken"] },
                 [Kind.Alphabetic.event] : {
                     target: "identifier",
                     actions: ["startValueIdentifierToken"],
@@ -293,6 +294,9 @@ export const config = {
         }),
         insertBlankToken: assign((C, E) => {
             C.tokens.push(Token.Blank.create());
+        }),
+        insertCommaToken: assign((C, E) => {
+            C.tokens.push(Token.Comma.create());
         }),
         addCharToCurrentToken: assign((C, E) => {
             C.currentToken.push(E.char);

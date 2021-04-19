@@ -62,6 +62,7 @@ it("All valid characters have a kind", () => {
         const kind = getKind(char);
         expect(kind.name).toBeDefined();
         expect(kind).toBe(Kind[kind.name]);
+        expect(kind).not.toEqual(Kind.Unknown);
     }
     const rangeHasKind = (start, end) => {
         let i = start.charCodeAt(0);
@@ -77,7 +78,7 @@ it("All valid characters have a kind", () => {
     rangeHasKind("0", "9");
 
     // Now check all literals
-    ["_", ".", "!", "@", "[", "]", "(", ")", "{", "}", ":", " ", "\t", "\n", "\""]
+    ["_", ".", "!", "@", "[", "]", "(", ")", "{", "}", ":", " ", "\t", "\n", "\"", ","]
         .forEach(testCharHasKind);
 })
 // Kind:1 ends here

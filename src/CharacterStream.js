@@ -65,6 +65,10 @@ Kind.Whitespace = {
     event: "WHITESPACE",
     group: [" ", "\t", "\n"]
 };
+Kind.Comma = {
+    event: "COMMA",
+    literal: ",",
+};
 Kind.DoubleQuote = {
     event: "DOUBLE_QUOTE",
     literal : "\"",

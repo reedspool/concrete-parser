@@ -25,8 +25,10 @@ class _AbstractSyntaxTree {
     _appendBlock(block) { this.tape.append(block); }
 
     appendValueBlock(token) { this._appendBlock(ValueBlock(token)); }
-    
+
     appendOpBlock(token) { this._appendBlock(OpBlock(token)); }
+
+    appendComma() { this.tape.appendComma(); }
 
     labelNextCell(token) {
         this.tape.setLabel(
@@ -49,7 +51,7 @@ class _AbstractSyntaxTree {
 
     addParamForNextTape(token) {
         const last = this.unfinishedParameterList.slice(-1)[0];
-        
+
         if (last && last.label.is(Token.LabelIdentifier) && ! last.default) {
             // If the last was a label, this is the default value for it
             last.default = token;
@@ -59,7 +61,7 @@ class _AbstractSyntaxTree {
             if (this.parameterNameAlreadyUsed(token)) {
                 throw new Error(`Duplicate parameter names not allowed: ${token.original}`);
             }
-            
+
             this.unfinishedParameterList.push({
                 label: token
             });
@@ -70,7 +72,7 @@ class _AbstractSyntaxTree {
     }
 
     parameterNameAlreadyUsed(token) {
-        return this.unfinishedParameterList.find(param => 
+        return this.unfinishedParameterList.find(param =>
             param.label.original == token.original);
     }
 }

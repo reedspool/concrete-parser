@@ -68,22 +68,34 @@ export const definition = {
 
 
 
-// If we get a label, it must label a block, so we move into the sub-state in which a block must come next.
+// Commas are not blocks, they bind value blocks together. So they don't add a block to the tape.
 
 
 // [[file:../literate/ParseMachine.org::*Definition][Definition:3]]
+                [Token.Comma.event] : {
+                    target: ".label.any",
+                    actions: [ "addCommaToTape" ]
+                },
+// Definition:3 ends here
+
+
+
+// If we get a label, it must label a block, so we move into the sub-state in which a block must come next.
+
+
+// [[file:../literate/ParseMachine.org::*Definition][Definition:4]]
                 [Token.LabelIdentifier.event] : {
                     target: ".label.expectingBlock",
                     actions: [ "labelNextBlock" ]
                 },
-// Definition:3 ends here
+// Definition:4 ends here
 
 
 
 // Tokens which open and close tapes are a little more complicated than the simple block tokens.
 
 
-// [[file:../literate/ParseMachine.org::*Definition][Definition:4]]
+// [[file:../literate/ParseMachine.org::*Definition][Definition:5]]
                 [Token.OpenTape.event] : {
                     target: ".label.any",
                     actions: [ "openTape" ]
@@ -98,20 +110,20 @@ export const definition = {
                 [Token.CloseInlineTape.event] : {
                     actions: [ "closeInlineTape" ]
                 },
-// Definition:4 ends here
+// Definition:5 ends here
 
 
 
 // Parameter lists are one of the most complicated constructs in the syntax, so they deserve their own sub-state.
 
 
-// [[file:../literate/ParseMachine.org::*Definition][Definition:5]]
+// [[file:../literate/ParseMachine.org::*Definition][Definition:6]]
                 [Token.OpenParams.event] : {
                     target: [ ".label.any", ".params.open" ],
                     actions: [ "openParams" ]
                 },
             },
-// Definition:5 ends here
+// Definition:6 ends here
 
 
 
@@ -126,7 +138,7 @@ export const definition = {
 // Note the use of the wildcard event, ="*"=, which overrides/shadows /all/ events. Many possible tokens are invalid in a parameter list.
 
 
-// [[file:../literate/ParseMachine.org::*Definition][Definition:6]]
+// [[file:../literate/ParseMachine.org::*Definition][Definition:7]]
             type: "parallel",
             states : {
                 params : {
@@ -148,7 +160,7 @@ export const definition = {
                                 "*" : { actions: [ "invalidParamTokenError" ] }
                             }
                         },
-// Definition:6 ends here
+// Definition:7 ends here
 
 
 
@@ -157,7 +169,7 @@ export const definition = {
 // In the future, I would like to accept complex sequences like tapes as default parameters.
 
 
-// [[file:../literate/ParseMachine.org::*Definition][Definition:7]]
+// [[file:../literate/ParseMachine.org::*Definition][Definition:8]]
                         expectingDefaultValue : {
                             on: {
                                 [Token.Number.event] : {
@@ -184,14 +196,14 @@ export const definition = {
                                 },
                             }
                         },
-// Definition:7 ends here
+// Definition:8 ends here
 
 
 
 // After a parameter list, the next token /must/ be an "open tape", =[=.
 
 
-// [[file:../literate/ParseMachine.org::*Definition][Definition:8]]
+// [[file:../literate/ParseMachine.org::*Definition][Definition:9]]
                         expectingTape: {
                             on: {
                                 [Token.OpenTape.event] : {
@@ -205,14 +217,14 @@ export const definition = {
                         },
                     },
                 },
-// Definition:8 ends here
+// Definition:9 ends here
 
 
 
 // The next sub-state is the label sub-state. This simply describes two invalid cases for subsequent tokens after labels. First, there cannot be multiple labels consecutively, a block must come between. Second, a =DONE= event after a label, but before another block which the label points to, is an error.
 
 
-// [[file:../literate/ParseMachine.org::*Definition][Definition:9]]
+// [[file:../literate/ParseMachine.org::*Definition][Definition:10]]
                 label: {
                     initial: "any",
                     states: {
@@ -229,14 +241,14 @@ export const definition = {
                 }
             }
         },
-// Definition:9 ends here
+// Definition:10 ends here
 
 
 
 // We can receive =DONE= event at almost any time, at which point the machine finalizes. Once in the "done" state, the machine cannot receive any more events.
 
 
-// [[file:../literate/ParseMachine.org::*Definition][Definition:10]]
+// [[file:../literate/ParseMachine.org::*Definition][Definition:11]]
         done: {
             type: "final",
             data: (C) => C.tree
@@ -246,7 +258,7 @@ export const definition = {
         DONE: { target: "done" }
     }
 };
-// Definition:10 ends here
+// Definition:11 ends here
 
 // Configuration
 
@@ -262,6 +274,9 @@ export const config = {
         }),
         addOpBlockToTape: assign((C, E) => {
             C.tree.appendOpBlock(E);
+        }),
+        addCommaToTape: assign((C, E) => {
+            C.tree.appendComma();
         }),
         labelNextBlock: assign((C, E) => {
             C.tree.labelNextCell(E)

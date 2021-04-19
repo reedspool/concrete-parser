@@ -49,6 +49,17 @@ it("Tokenizes just a blank", () => {
 })
 #+end_src
 
+* Comma
+
+#+begin_src js
+it("Tokenizes just a comma", () => {
+    streamFile(",", streamCallback);
+    expect(interpreter.S).toMatchState("done");
+    expect(interpreter.C.tokens).toEqual(
+        [ Token.Comma.create() ]);
+})
+#+end_src
+
 * Value Identifier
 
 Okay what about a complete identifier?

@@ -97,6 +97,29 @@ it("A label at the end of a tape is an error", () => {
 })
 // Labels:3 ends here
 
+// Commas
+
+
+// [[file:../literate/ParseMachineTests.org::*Commas][Commas:1]]
+it("Parses some value blocks with commas", () => {
+    tree.appendComma();
+    tree.appendValueBlock(Token.Blank.create());
+    tree.appendValueBlock(Token.Blank.create());
+    tree.appendComma();
+    interpreter.send(Token.Comma.create());
+    interpreter.send(Token.Blank.create());
+    interpreter.send(Token.Blank.create());
+    interpreter.send(Token.Comma.create());
+    interpreter.send("DONE");
+
+    expect(interpreter.S).toMatchState("done");
+    expect(interpreter.C.tree).toEqual(tree);
+    expect(interpreter.C.tree.tape.cells).toHaveLength(2);
+    expect(interpreter.C.tree.tape.commas[0]).toBeTruthy();
+    expect(interpreter.C.tree.tape.commas[2]).toBeTruthy();
+})
+// Commas:1 ends here
+
 // Tapes
 
 
