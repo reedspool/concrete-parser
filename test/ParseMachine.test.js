@@ -44,9 +44,9 @@ it("Starts empty", () => {
 
 // [[file:../literate/ParseMachineTests.org::*Simple][Simple:2]]
 it("Parses just a blank", () => {
-    tree.appendValueBlock(Token.Blank.factory());
+    tree.appendValueBlock(Token.Blank.create());
 
-    interpreter.send(Token.Blank.factory());
+    interpreter.send(Token.Blank.create());
     interpreter.send("DONE");
 
     expect(interpreter.S).toMatchState("done");
@@ -61,10 +61,10 @@ it("Parses just a blank", () => {
 
 // [[file:../literate/ParseMachineTests.org::*Labels][Labels:1]]
 it("Parses a blank with a label", () => {
-    tree.labelNextCell(Token.LabelIdentifier.factory("abcd"));
-    tree.appendValueBlock(Token.Blank.factory());
-    interpreter.send(Token.LabelIdentifier.factory("abcd"));
-    interpreter.send(Token.Blank.factory());
+    tree.labelNextCell(Token.LabelIdentifier.create("abcd"));
+    tree.appendValueBlock(Token.Blank.create());
+    interpreter.send(Token.LabelIdentifier.create("abcd"));
+    interpreter.send(Token.Blank.create());
     interpreter.send("DONE");
 
     expect(interpreter.S).toMatchState("done");
@@ -78,10 +78,10 @@ it("Parses a blank with a label", () => {
 
 // [[file:../literate/ParseMachineTests.org::*Labels][Labels:2]]
 it("A label followed by a label is an error", () => {
-    interpreter.send(Token.LabelIdentifier.factory("abcd"));
+    interpreter.send(Token.LabelIdentifier.create("abcd"));
     expect(interpreter.S).toMatchState("ready.label.expectingBlock");
     const fn = () =>
-        interpreter.send(Token.LabelIdentifier.factory("abcd"));
+        interpreter.send(Token.LabelIdentifier.create("abcd"));
 
     expect(fn).toThrowError();
 })
@@ -89,7 +89,7 @@ it("A label followed by a label is an error", () => {
 
 // [[file:../literate/ParseMachineTests.org::*Labels][Labels:3]]
 it("A label at the end of a tape is an error", () => {
-    interpreter.send(Token.LabelIdentifier.factory("abcd"));
+    interpreter.send(Token.LabelIdentifier.create("abcd"));
     expect(interpreter.S).toMatchState("ready.label.expectingBlock");
     const fn = () =>
           interpreter.send("DONE");
@@ -104,8 +104,8 @@ it("A label at the end of a tape is an error", () => {
 it("Parses just an empty tape", () => {
     tree.openTape();
     tree.closeTape();
-    interpreter.send(Token.OpenTape.factory());
-    interpreter.send(Token.CloseTape.factory());
+    interpreter.send(Token.OpenTape.create());
+    interpreter.send(Token.CloseTape.create());
     interpreter.send("DONE");
 
     expect(interpreter.S).toMatchState("done");
@@ -124,12 +124,12 @@ it("Parses just an empty tape", () => {
 it("Parses an empty tape with an empty param list", () => {
     tree.openTape();
     tree.closeTape();
-    interpreter.send(Token.OpenParams.factory());
+    interpreter.send(Token.OpenParams.create());
     expect(interpreter.S).toMatchState("ready.params.open");
-    interpreter.send(Token.CloseParams.factory());
+    interpreter.send(Token.CloseParams.create());
     expect(interpreter.S).toMatchState("ready.params.expectingTape");
-    interpreter.send(Token.OpenTape.factory());
-    interpreter.send(Token.CloseTape.factory());
+    interpreter.send(Token.OpenTape.create());
+    interpreter.send(Token.CloseTape.create());
     interpreter.send("DONE");
 
     expect(interpreter.S).toMatchState("done");
@@ -141,21 +141,21 @@ it("Parses an empty tape with an empty param list", () => {
 
 // [[file:../literate/ParseMachineTests.org::*Tapes][Tapes:3]]
 it("Parses an empty tape with a param list", () => {
-    tree.addParamForNextTape(Token.ValueIdentifier.factory("meow"));
-    tree.addParamForNextTape(Token.LabelIdentifier.factory("abcd"));
-    tree.addParamForNextTape(Token.ValueIdentifier.factory("cheese"));
+    tree.addParamForNextTape(Token.ValueIdentifier.create("meow"));
+    tree.addParamForNextTape(Token.LabelIdentifier.create("abcd"));
+    tree.addParamForNextTape(Token.ValueIdentifier.create("cheese"));
     tree.openTape();
     tree.closeTape();
-    interpreter.send(Token.OpenParams.factory());
+    interpreter.send(Token.OpenParams.create());
     expect(interpreter.S).toMatchState("ready.params.open");
-    interpreter.send(Token.ValueIdentifier.factory("meow"));
-    interpreter.send(Token.LabelIdentifier.factory("abcd"));
+    interpreter.send(Token.ValueIdentifier.create("meow"));
+    interpreter.send(Token.LabelIdentifier.create("abcd"));
     expect(interpreter.S).toMatchState("ready.params.expectingDefaultValue");
-    interpreter.send(Token.ValueIdentifier.factory("cheese"));
-    interpreter.send(Token.CloseParams.factory("meow"));
+    interpreter.send(Token.ValueIdentifier.create("cheese"));
+    interpreter.send(Token.CloseParams.create("meow"));
     expect(interpreter.S).toMatchState("ready.params.expectingTape");
-    interpreter.send(Token.OpenTape.factory());
-    interpreter.send(Token.CloseTape.factory());
+    interpreter.send(Token.OpenTape.create());
+    interpreter.send(Token.CloseTape.create());
     interpreter.send("DONE");
 
     expect(interpreter.S).toMatchState("done");
@@ -166,10 +166,10 @@ it("Parses an empty tape with a param list", () => {
 
 // [[file:../literate/ParseMachineTests.org::*Tapes][Tapes:4]]
 it("Duplicate parameter labels error", () => {
-    interpreter.send(Token.OpenParams.factory());
+    interpreter.send(Token.OpenParams.create());
     expect(interpreter.S).toMatchState("ready.params.open");
-    interpreter.send(Token.ValueIdentifier.factory("meow"));
-    const fn = () => interpreter.send(Token.LabelIdentifier.factory("meow"));
+    interpreter.send(Token.ValueIdentifier.create("meow"));
+    const fn = () => interpreter.send(Token.LabelIdentifier.create("meow"));
 
     expect(fn).toThrowError();
 })
@@ -199,12 +199,12 @@ it("XState interpreter onDone called successfully on non-empty file", async () =
     const interpreter = interpret(parseMachine);
     const promise = Promise();
 
-    tree.appendValueBlock(Token.Number.factory("3"));
+    tree.appendValueBlock(Token.Number.create("3"));
 
     interpreter.onDone(({ data }) => promise.resolve(data));
     interpreter.start();
 
-    interpreter.send(Token.Number.factory("3"));
+    interpreter.send(Token.Number.create("3"));
     interpreter.send("DONE");
     expect(await promise).toEqual(tree);
     interpreter.stop();

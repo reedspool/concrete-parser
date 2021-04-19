@@ -10,7 +10,7 @@ import { Token } from "../src/LexicalToken.js";
 
 // [[file:../literate/LexicalTokenTests.org::*ValueIdentifier][ValueIdentifier:1]]
 it("Simple ValueIdentifier", () => {
-    expect(Token.ValueIdentifier.factory("abcd")).toEqual({
+    expect(Token.ValueIdentifier.create("abcd")).toEqual({
         name: "ValueIdentifier",
         type: Token.ValueIdentifier.event,
         original: "abcd"
@@ -18,7 +18,7 @@ it("Simple ValueIdentifier", () => {
 })
 
 it("ValueIdentifier can be added to", () => {
-    const token = Token.ValueIdentifier.factory("a");
+    const token = Token.ValueIdentifier.create("a");
     token.push("b");
     expect(token).toEqual({
         name: "ValueIdentifier",
@@ -33,7 +33,7 @@ it("ValueIdentifier can be added to", () => {
 
 // [[file:../literate/LexicalTokenTests.org::*Blank][Blank:1]]
 it("Blank", () => {
-    expect(Token.Blank.factory()).toEqual({
+    expect(Token.Blank.create()).toEqual({
         name: "Blank",
         type: Token.Blank.event,
         original: "_"
@@ -41,7 +41,7 @@ it("Blank", () => {
 })
 
 it("Blank can NOT be added to", () => {
-    const token = Token.Blank.factory();
+    const token = Token.Blank.create();
     expect(() => token.push("a")).toThrowError();
 })
 // Blank:1 ends here
@@ -51,7 +51,7 @@ it("Blank can NOT be added to", () => {
 
 // [[file:../literate/LexicalTokenTests.org::*Number][Number:1]]
 it("Number", () => {
-    expect(Token.Number.factory("1")).toEqual({
+    expect(Token.Number.create("1")).toEqual({
         name: "Number",
         type: Token.Number.event,
         original: "1"
@@ -59,7 +59,7 @@ it("Number", () => {
 })
 
 it("Number can be added to", () => {
-    const token = Token.Number.factory("0");
+    const token = Token.Number.create("0");
     token.push("1");
     expect(token).toEqual({
         name: "Number",

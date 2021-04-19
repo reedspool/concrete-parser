@@ -239,27 +239,27 @@ export const config = {
             C.tokens = [];
         }),
         startValueIdentifierToken: assign((C, E) => {
-            C.currentToken = Token.ValueIdentifier.factory(E.char)
+            C.currentToken = Token.ValueIdentifier.create(E.char)
         }),
         startStringToken: assign((C, E) => {
-            C.currentToken = Token.String.factory(E.char)
+            C.currentToken = Token.String.create(E.char)
         }),
         startAddressIdentifierToken: assign((C, E) => {
-            C.currentToken = Token.AddressIdentifier.factory(E.char)
+            C.currentToken = Token.AddressIdentifier.create(E.char)
         }),
         transposeToCallIdentifier: assign((C, E) => {
-            C.currentToken = Token.CallIdentifier.factory(
+            C.currentToken = Token.CallIdentifier.create(
                 C.currentToken.original);
         }),
         transposeToLabelIdentifier: assign((C, E) => {
-            C.currentToken = Token.LabelIdentifier.factory(
+            C.currentToken = Token.LabelIdentifier.create(
                 C.currentToken.original);
         }),
         startNumberToken: assign((C, E) => {
-            C.currentToken = Token.Number.factory(E.char)
+            C.currentToken = Token.Number.create(E.char)
         }),
         insertBlankToken: assign((C, E) => {
-            C.tokens.push(Token.Blank.factory());
+            C.tokens.push(Token.Blank.create());
         }),
         addCharToCurrentToken: assign((C, E) => {
             C.currentToken.push(E.char);

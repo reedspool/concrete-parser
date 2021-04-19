@@ -43,61 +43,61 @@ class _ExpandableToken extends _SimpleToken {
 export const Token = {};
 Token.ValueIdentifier = {
     event: "VALUE_IDENTIFIER",
-    factoryType: ExpandableToken,
+    factory: ExpandableToken,
 };
 Token.AddressIdentifier = {
     event: "ADDRESS_IDENTIFIER",
-    factoryType: ExpandableToken,
+    factory: ExpandableToken,
 };
 Token.CallIdentifier = {
     event: "CALL_IDENTIFIER",
-    factoryType: ExpandableToken,
+    factory: ExpandableToken,
 };
 Token.LabelIdentifier = {
     event: "LABEL_IDENTIFIER",
-    factoryType: ExpandableToken,
+    factory: ExpandableToken,
 };
 Token.Number = {
     event: "NUMBER",
-    factoryType: ExpandableToken,
+    factory: ExpandableToken,
 };
 Token.String = {
     event: "STRING",
-    factoryType: ExpandableToken,
+    factory: ExpandableToken,
 };
 Token.Blank = {
     event: "BLANK",
-    factoryType: SimpleToken,
+    factory: SimpleToken,
     literal: "_"
 };
 Token.OpenTape = {
     event: "OPEN_TAPE",
-    factoryType: SimpleToken,
+    factory: SimpleToken,
     literal: "["
 };
 Token.CloseTape = {
     event: "CLOSE_TAPE",
-    factoryType: SimpleToken,
+    factory: SimpleToken,
     literal: "]"
 };
 Token.OpenParams = {
     event: "OPEN_PARAMS",
-    factoryType: SimpleToken,
+    factory: SimpleToken,
     literal: "("
 };
 Token.CloseParams = {
     event: "CLOSE_PARAMS",
-    factoryType: SimpleToken,
+    factory: SimpleToken,
     literal: ")"
 };
 Token.OpenInlineTape = {
     event: "OPEN_INLINE_TAPE",
-    factoryType: SimpleToken,
+    factory: SimpleToken,
     literal: "{"
 };
 Token.CloseInlineTape = {
     event: "CLOSE_INLINE_TAPE",
-    factoryType: SimpleToken,
+    factory: SimpleToken,
     literal: "}"
 };
 // Token:1 ends here
@@ -111,11 +111,11 @@ Token.CloseInlineTape = {
 Object.entries(Token).forEach(([name, value]) => {
     value.name = name;
     
-    if (value.factoryType == ExpandableToken) {
-        value.factory = (char) => ExpandableToken(name, value.event, char);
+    if (value.factory == ExpandableToken) {
+        value.create = (char) => ExpandableToken(name, value.event, char);
     }
-    else if (value.factoryType == SimpleToken) {
-        value.factory = () => SimpleToken(name, value.event, value.literal);
+    else if (value.factory == SimpleToken) {
+        value.create = () => SimpleToken(name, value.event, value.literal);
     }
     else throw new Error(`Token ${name} has no factory`)
 })
