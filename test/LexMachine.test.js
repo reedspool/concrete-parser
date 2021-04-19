@@ -203,12 +203,16 @@ it("Lexing a decimal that ends with a period throws an error", () => {
 
 // [[file:../literate/LexMachineTests.org::*Strings][Strings:1]]
 it("Lexes a simple string", () => {
-    stream("\"", streamCallback);
+    interpreter.send({ type: "DOUBLE_QUOTE", char: "\"" })
     expect(interpreter.S).toMatchState("string");
-    streamFile("meow\"", streamCallback);
+    interpreter.send({ type: "ALPHABETIC", char: "m" })
+    expect(interpreter.S).toMatchState("string");
+    interpreter.send({ type: "DOUBLE_QUOTE", char: "\"" })
+    expect(interpreter.S).toMatchState("none");
+    interpreter.send({ type: "EOF", char: undefined });
     expect(interpreter.S).toMatchState("done");
     expect(interpreter.C.tokens).toEqual(
-        [ Token.String.create("\"meow\"") ]);
+        [ Token.String.create("\"m\"") ]);
 })
 // Strings:1 ends here
 
