@@ -20,7 +20,7 @@ beforeEach(() => {
 
 
 // [[file:../literate/ParserTests.org::*Parse File Tests][Parse File Tests:1]]
-it.skip("Can parse a blank file and produce a blank tree", async () => {
+it("Can parse a blank file and produce a blank tree", async () => {
     const parsed = await parseFile("");
     expect(parsed).toEqual(expected);
 })
