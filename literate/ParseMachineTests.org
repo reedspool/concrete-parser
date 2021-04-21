@@ -8,7 +8,7 @@ import * as ParseMachine from "../src/ParseMachine.js";
 import { Machine, interpret } from "xstate";
 import { Token } from "../src/LexicalToken";
 import { Block, Tape } from "../src/Block";
-import { InvertedPromise as Promise } from "../src/InvertedPromise";
+import { InvertedPromise as Promise } from "inverted-promise";
 import { AbstractSyntaxTree } from "../src/AbstractSyntaxTree"
 import { TestInterpreter, toMatchState } from "xstate-jest-tools";
 expect.extend({ toMatchState });

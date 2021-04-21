@@ -23,8 +23,9 @@ Tests in this repo rely my package =xstate-jest-tools= which I have not yet publ
 
 =npm update= unfortunately does not work with github-installed modules. So, to install and to update, call this:
 
-#+begin_src sh :tangle no :results silent
+#+begin_src sh :tangle no :results silent raw
 npm install -D https://github.com/reedspool/xstate-jest-tools
+npm install -D https://github.com/reedspool/inverted-promise
 #+end_src
 
 * How to generate source files in this project
@@ -94,12 +95,15 @@ And finally:
 :header-args: :comments both :tangle jest.config.js
 :END:
 
-Because my custom package =xstate-jest-tools= is not Babel-transformed yet, this project must specifically inform Jest's Babel transformer to *not* ignore it, and transform it as well:
+Because my custom packages are not Babel-transformed yet, this project must specifically inform Jest's Babel transformer to *not* ignore it, and transform it as well:
+
+- =xstate-jest-tools=
+- =inverted-promise=
 
 #+begin_src js
 module.exports = {
     transformIgnorePatterns: [
-        "node_modules/(?!xstate-jest-tools)"
+        "node_modules/(?!xstate-jest-tools|inverted-promise)"
     ]
 }
 #+end_src

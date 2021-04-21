@@ -6,7 +6,7 @@ import { interpret } from "xstate";
 import { stream, streamFile } from "./CharacterStream";
 import * as LexMachine from "./LexMachine.js";
 import * as ParseMachine from "./ParseMachine.js";
-import { InvertedPromise as Promise } from "./InvertedPromise";
+import { InvertedPromise as Promise } from "inverted-promise";
 // Preamble:1 ends here
 
 // Parse File

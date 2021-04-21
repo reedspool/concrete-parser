@@ -11,6 +11,7 @@
   "license": "ISC",
   "devDependencies": {
     "@babel/preset-env": "^7.13.12",
+    "inverted-promise": "github:reedspool/inverted-promise",
     "jest": "^26.6.3",
     "xstate-jest-tools": "github:reedspool/xstate-jest-tools"
   },

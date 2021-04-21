@@ -5,7 +5,7 @@
 import * as LexMachine from "../src/LexMachine.js";
 import { Token } from "../src/LexicalToken";
 import { interpret, Machine } from "xstate";
-import { InvertedPromise as Promise } from "../src/InvertedPromise";
+import { InvertedPromise as Promise } from "inverted-promise";
 import { TestInterpreter, toMatchState } from "xstate-jest-tools";
 import { streamFile, stream } from "../src/CharacterStream";
 expect.extend({ toMatchState });
