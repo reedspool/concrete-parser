@@ -24,3 +24,18 @@ it("Can add Token to tape", () => {
         [ValueBlock(Token.Number.create("3"))]);
 })
 // No heading:2 ends here
+
+// [[file:../literate/AbstractSyntaxTreeTests.org::+begin_src js][No heading:3]]
+it("Tree starts out empty", () => {
+    const tree = AbstractSyntaxTree();
+    expect(tree.isEmpty()).toBeTruthy();
+})
+// No heading:3 ends here
+
+// [[file:../literate/AbstractSyntaxTreeTests.org::+begin_src js][No heading:4]]
+it("Tree after adding a block is no longer empty", () => {
+    const tree = AbstractSyntaxTree();
+    tree.appendValueBlock(Token.Number.create("3"));
+    expect(tree.isEmpty()).toBeFalsy();
+})
+// No heading:4 ends here

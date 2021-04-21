@@ -77,6 +77,8 @@ class _Tape {
     
     is(category) { return this.category.name == category.name; }
 
+    isEmpty() { return this.cells.length == 0; }
+
     append (block) {
         this.cells.push(block);
     }

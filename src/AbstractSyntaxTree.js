@@ -22,6 +22,11 @@ class _AbstractSyntaxTree {
         this.unfinishedParameterList = [];
     }
 
+    isEmpty() {
+        return this.tape.isEmpty() &&
+            this.unfinishedTapeStack.length == 0;
+    }
+
     _appendBlock(block) { this.tape.append(block); }
 
     appendValueBlock(token) { this._appendBlock(ValueBlock(token)); }
