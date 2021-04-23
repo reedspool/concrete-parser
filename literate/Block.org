@@ -3,6 +3,12 @@
 
 A block is just a wrapper around a lexical token with a category.
 
+Preamble:
+
+#+begin_src js
+import { Token } from "./LexicalToken";
+#+end_src
+
 A category helps the interpreter know what to do with the block.
 
 #+begin_src js
@@ -41,6 +47,39 @@ We want to easily check which category a block belongs to, e.g. =myBlock.is(Cate
 
 #+begin_src js
     is(category) { return this.category.name == category.name; }
+#+end_src
+
+Any value block can exit the Concrete environment into JavaScript land.
+
+How to convert the block into a JS value depends on what it contains.
+
+Blocks are immutable so we can cache the value instead of recalculating it.
+
+#+begin_src js
+    asJS() {
+        if (typeof this.jsValue != "undefined") return this.jsValue;
+
+        if (this.token.is(Token.Blank)) {
+            this.jsValue = null;
+        }
+        else if (this.token.is(Token.Number)) {
+            this.jsValue = parseFloat(this.token.original);
+        }
+        else if (this.token.is(Token.String)) {
+            // TODO: HOW DO WE NOT USE EVAL HERE OTHER THAN CONSTRUCTING THE STRING IN A DIFFERENT WAY
+            this.jsValue = eval(this.token.original);
+        }
+        else {
+            throw new Error(`Block of token type ${this.token.name} cannot be converted to JS`);
+        }
+        
+        return this.jsValue;
+    }
+#+end_src
+
+Close the block class
+
+#+begin_src js
 }
 #+end_src
 
@@ -77,6 +116,10 @@ class _Tape {
     setLabel (token, index) {
         this.labelsByIndex[index] = token.original;
         this.labelsToIndex[token.original] = index;
+    }
+
+    asJS() {
+        return this.cells.map(block => block.asJS());
     }
 }
 #+end_src

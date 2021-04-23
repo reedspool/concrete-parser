@@ -50,7 +50,7 @@ export const definition = {
                 },
                 [Token.CallIdentifier.event] : {
                     target: ".label.any",
-                    actions: [ "addValueBlockToTape" ]
+                    actions: [ "addOpBlockToTape" ]
                 },
                 [Token.String.event] : {
                     target: ".label.any",

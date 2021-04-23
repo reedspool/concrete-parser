@@ -7,6 +7,7 @@
 import { parseFile } from "../src/Parser";
 import { AbstractSyntaxTree } from "../src/AbstractSyntaxTree";
 import { Token } from "../src/LexicalToken";
+import { ValueBlock, OpBlock } from "../src/Block";
 #+end_src
 
 #+begin_src js
@@ -82,5 +83,67 @@ it("Parses a few blocks with commas", async () => {
     expected.appendComma();
     expected.appendValueBlock(Token.Number.create("4"));
     expect(parsed).toEqual(expected);
+})
+#+end_src
+
+* Parse labels
+
+#+begin_src js
+it("Parses labels on blocks", async () => {
+    const parsed = await parseFile("a: b");
+    expected.labelNextCell(Token.LabelIdentifier.create("a:"));
+    expected.appendValueBlock(Token.ValueIdentifier.create("b"));
+    expect(parsed).toEqual(expected);
+})
+#+end_src
+
+* Parse Op blocks and identifiers
+
+#+begin_src js
+it("Parses op blocks and identifiers", async () => {
+    const parsed = await parseFile("call! @address value");
+    expected.appendOpBlock(Token.CallIdentifier.create("call!"));
+    expected.appendValueBlock(Token.AddressIdentifier.create("@address"));
+    expected.appendValueBlock(Token.ValueIdentifier.create("value"));
+    expect(parsed).toEqual(expected);
+})
+#+end_src
+
+* asJS() on blocks
+
+#+begin_src js
+it("asJS() works on a variety of blocks", async () => {
+    const parsed = await parseFile("_ \"Hello World!\" 1 1.2");
+    const [ blank, string, integer, decimal ] = parsed.tape.cells;
+    
+    expect(blank).toEqual(ValueBlock(Token.Blank.create()));
+    expect(blank.asJS()).toEqual(null);
+    
+    expect(string).toEqual(
+        ValueBlock(Token.String.create("\"Hello World!\"")));
+    expect(string.asJS()).toEqual("Hello World!");
+    
+    expect(integer).toEqual(
+        ValueBlock(Token.Number.create("1")));
+    expect(integer.asJS()).toEqual(1);
+    
+    expect(decimal).toEqual(
+        ValueBlock(Token.Number.create("1.2")));
+    expect(decimal.asJS()).toEqual(1.2);
+})
+#+end_src
+
+#+begin_src js
+it("asJS() errors on blocks which cannot be converted", async () => {
+    const parsed = await parseFile("label: call! @address value");
+    const [ call, address, value ] = parsed.tape.cells;
+    
+    expect(call).toEqual(
+        OpBlock(Token.CallIdentifier.create("call!")));
+    expect(() => value.asJS()).toThrowError();
+    expect(value).toEqual(ValueBlock(Token.ValueIdentifier.create("value")));
+    expect(() => value.asJS()).toThrowError();
+    expect(value).toEqual(ValueBlock(Token.ValueIdentifier.create("value")));
+    expect(() => value.asJS()).toThrowError();
 })
 #+end_src

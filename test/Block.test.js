@@ -6,27 +6,29 @@ import { ValueBlock, Tape, OpBlock, Category } from "../src/Block";
 import { Token } from "../src/LexicalToken";
 // Preamble:1 ends here
 
-// Tests 
+// Basics 
 
-// [[file:../literate/BlockTests.org::*Tests][Tests:1]]
+// [[file:../literate/BlockTests.org::*Basics][Basics:1]]
 it("Basic value block", () => {
     const token = Token.Blank.create();
     const block = ValueBlock(token);
     expect(block.token).toEqual(token);
+    expect(block.asJS()).toEqual(null);
     expect(block.is(Category.Value)).toBe(true);
 })
-// Tests:1 ends here
+// Basics:1 ends here
 
-// [[file:../literate/BlockTests.org::*Tests][Tests:2]]
+// [[file:../literate/BlockTests.org::*Basics][Basics:2]]
 it("Basic op block", () => {
     const token = Token.CallIdentifier.create("abcd!");
     const block = OpBlock(token);
     expect(block.token).toEqual(token);
     expect(block.is(Category.Op)).toBe(true);
+    expect(block.category.name).toBe("Op");
 })
-// Tests:2 ends here
+// Basics:2 ends here
 
-// [[file:../literate/BlockTests.org::*Tests][Tests:3]]
+// [[file:../literate/BlockTests.org::*Basics][Basics:3]]
 it("Basic tape", () => {
     const token = Token.Blank.create();
     const block = ValueBlock(token);
@@ -37,5 +39,6 @@ it("Basic tape", () => {
     expect(tape.cells.length).toBe(1);
     expect(tape.cells[0]).toEqual(block);
     expect(tape.is(Category.Value)).toBe(true);
+    expect(tape.asJS()).toEqual([ null ]);
 })
-// Tests:3 ends here
+// Basics:3 ends here

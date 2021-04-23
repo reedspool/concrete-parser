@@ -8,12 +8,13 @@ import { ValueBlock, Tape, OpBlock, Category } from "../src/Block";
 import { Token } from "../src/LexicalToken";
 #+end_src
 
-* Tests 
+* Basics 
 #+begin_src js
 it("Basic value block", () => {
     const token = Token.Blank.create();
     const block = ValueBlock(token);
     expect(block.token).toEqual(token);
+    expect(block.asJS()).toEqual(null);
     expect(block.is(Category.Value)).toBe(true);
 })
 #+end_src
@@ -24,6 +25,7 @@ it("Basic op block", () => {
     const block = OpBlock(token);
     expect(block.token).toEqual(token);
     expect(block.is(Category.Op)).toBe(true);
+    expect(block.category.name).toBe("Op");
 })
 #+end_src
 
@@ -38,5 +40,6 @@ it("Basic tape", () => {
     expect(tape.cells.length).toBe(1);
     expect(tape.cells[0]).toEqual(block);
     expect(tape.is(Category.Value)).toBe(true);
+    expect(tape.asJS()).toEqual([ null ]);
 })
 #+end_src

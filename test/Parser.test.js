@@ -5,6 +5,7 @@
 import { parseFile } from "../src/Parser";
 import { AbstractSyntaxTree } from "../src/AbstractSyntaxTree";
 import { Token } from "../src/LexicalToken";
+import { ValueBlock, OpBlock } from "../src/Block";
 // Preamble:1 ends here
 
 // [[file:../literate/ParserTests.org::*Preamble][Preamble:2]]
@@ -90,3 +91,68 @@ it("Parses a few blocks with commas", async () => {
     expect(parsed).toEqual(expected);
 })
 // Parse Series of blocks and commas:1 ends here
+
+// Parse labels
+
+
+// [[file:../literate/ParserTests.org::*Parse labels][Parse labels:1]]
+it("Parses labels on blocks", async () => {
+    const parsed = await parseFile("a: b");
+    expected.labelNextCell(Token.LabelIdentifier.create("a:"));
+    expected.appendValueBlock(Token.ValueIdentifier.create("b"));
+    expect(parsed).toEqual(expected);
+})
+// Parse labels:1 ends here
+
+// Parse Op blocks and identifiers
+
+
+// [[file:../literate/ParserTests.org::*Parse Op blocks and identifiers][Parse Op blocks and identifiers:1]]
+it("Parses op blocks and identifiers", async () => {
+    const parsed = await parseFile("call! @address value");
+    expected.appendOpBlock(Token.CallIdentifier.create("call!"));
+    expected.appendValueBlock(Token.AddressIdentifier.create("@address"));
+    expected.appendValueBlock(Token.ValueIdentifier.create("value"));
+    expect(parsed).toEqual(expected);
+})
+// Parse Op blocks and identifiers:1 ends here
+
+// asJS() on blocks
+
+
+// [[file:../literate/ParserTests.org::*asJS() on blocks][asJS() on blocks:1]]
+it("asJS() works on a variety of blocks", async () => {
+    const parsed = await parseFile("_ \"Hello World!\" 1 1.2");
+    const [ blank, string, integer, decimal ] = parsed.tape.cells;
+    
+    expect(blank).toEqual(ValueBlock(Token.Blank.create()));
+    expect(blank.asJS()).toEqual(null);
+    
+    expect(string).toEqual(
+        ValueBlock(Token.String.create("\"Hello World!\"")));
+    expect(string.asJS()).toEqual("Hello World!");
+    
+    expect(integer).toEqual(
+        ValueBlock(Token.Number.create("1")));
+    expect(integer.asJS()).toEqual(1);
+    
+    expect(decimal).toEqual(
+        ValueBlock(Token.Number.create("1.2")));
+    expect(decimal.asJS()).toEqual(1.2);
+})
+// asJS() on blocks:1 ends here
+
+// [[file:../literate/ParserTests.org::*asJS() on blocks][asJS() on blocks:2]]
+it("asJS() errors on blocks which cannot be converted", async () => {
+    const parsed = await parseFile("label: call! @address value");
+    const [ call, address, value ] = parsed.tape.cells;
+    
+    expect(call).toEqual(
+        OpBlock(Token.CallIdentifier.create("call!")));
+    expect(() => value.asJS()).toThrowError();
+    expect(value).toEqual(ValueBlock(Token.ValueIdentifier.create("value")));
+    expect(() => value.asJS()).toThrowError();
+    expect(value).toEqual(ValueBlock(Token.ValueIdentifier.create("value")));
+    expect(() => value.asJS()).toThrowError();
+})
+// asJS() on blocks:2 ends here

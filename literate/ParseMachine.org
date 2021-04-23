@@ -50,7 +50,7 @@ Almost all the top-level tokens except labels switch the label-substate back to 
                 },
                 [Token.CallIdentifier.event] : {
                     target: ".label.any",
-                    actions: [ "addValueBlockToTape" ]
+                    actions: [ "addOpBlockToTape" ]
                 },
                 [Token.String.event] : {
                     target: ".label.any",
