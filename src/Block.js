@@ -75,7 +75,7 @@ class _Block {
             this.token = token;
             this.category.kind = token.kind;
         }
-        else if (jsValue) {
+        else if (typeof jsValue != "undefined") {
             const kind = jsTypesToKind[typeof jsValue];
 
             if (! kind) throw new Error(`No kind defined for JS value "${jsValue}", type "${typeof jsValue}"`);

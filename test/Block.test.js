@@ -57,3 +57,14 @@ it("Number block from JS value, no token", () => {
     expect(block.asJS()).toEqual(5);
 })
 // Making a block from a JS value:1 ends here
+
+// [[file:../literate/BlockTests.org::*Making a block from a JS value][Making a block from a JS value:2]]
+it("Number block from falsey JS value, no token", () => {
+    const block = ValueBlock.fromJS(0);
+
+    expect(block.token).toBeUndefined();
+    expect(block.is(Category.Value)).toBe(true);
+    expect(block.is(Category.Value, Token.Number.kind)).toBe(true);
+    expect(block.asJS()).toEqual(0);
+})
+// Making a block from a JS value:2 ends here
