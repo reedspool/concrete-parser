@@ -10,7 +10,7 @@ import { Token } from "../src/LexicalToken";
 
 // [[file:../literate/BlockTests.org::*Basics][Basics:1]]
 it("Basic value block", () => {
-    const token = Token.Blank.create();
+    const token = Token.Blank();
     const block = ValueBlock(token);
     expect(block.token).toEqual(token);
     expect(block.asJS()).toEqual(null);
@@ -20,7 +20,7 @@ it("Basic value block", () => {
 
 // [[file:../literate/BlockTests.org::*Basics][Basics:2]]
 it("Basic op block", () => {
-    const token = Token.CallIdentifier.create("abcd!");
+    const token = Token.CallIdentifier("abcd!");
     const block = OpBlock(token);
     expect(block.token).toEqual(token);
     expect(block.is(Category.Op)).toBe(true);
@@ -30,7 +30,7 @@ it("Basic op block", () => {
 
 // [[file:../literate/BlockTests.org::*Basics][Basics:3]]
 it("Basic tape", () => {
-    const token = Token.Blank.create();
+    const token = Token.Blank();
     const block = ValueBlock(token);
     const tape = Tape();
     

@@ -45,7 +45,7 @@ it("Can parse a file of only whitespace and produce a blank tree", async () => {
 // [[file:../literate/ParserTests.org::*Parse Single Block Tests][Parse Single Block Tests:1]]
 it("Parses a single blank", async () => {
     const parsed = await parseFile("_");
-    expected.appendValueBlock(Token.Blank.create());
+    expected.appendValueBlock(Token.Blank());
     expect(parsed).toEqual(expected);
 })
 // Parse Single Block Tests:1 ends here
@@ -58,13 +58,13 @@ it("Parses a single blank", async () => {
 // [[file:../literate/ParserTests.org::*Parse Single Block Tests][Parse Single Block Tests:2]]
 it("Parses a single number", async () => {
     const parsed = await parseFile("33554.432");
-    expected.appendValueBlock(Token.Number.create("33554.432"));
+    expected.appendValueBlock(Token.Number("33554.432"));
     expect(parsed).toEqual(expected);
 })
 
 it("Parses a single string", async () => {
     const parsed = await parseFile("\"Hello\"");
-    expected.appendValueBlock(Token.String.create("\"Hello\""));
+    expected.appendValueBlock(Token.String("\"Hello\""));
     expect(parsed).toEqual(expected);
 })
 // Parse Single Block Tests:2 ends here
@@ -82,12 +82,12 @@ it("Parses a single comma", async () => {
 it("Parses a few blocks with commas", async () => {
     const parsed = await parseFile(", 1 2,3 , 4");
     expected.appendComma();
-    expected.appendValueBlock(Token.Number.create("1"));
-    expected.appendValueBlock(Token.Number.create("2"));
+    expected.appendValueBlock(Token.Number("1"));
+    expected.appendValueBlock(Token.Number("2"));
     expected.appendComma();
-    expected.appendValueBlock(Token.Number.create("3"));
+    expected.appendValueBlock(Token.Number("3"));
     expected.appendComma();
-    expected.appendValueBlock(Token.Number.create("4"));
+    expected.appendValueBlock(Token.Number("4"));
     expect(parsed).toEqual(expected);
 })
 // Parse Series of blocks and commas:1 ends here
@@ -98,8 +98,8 @@ it("Parses a few blocks with commas", async () => {
 // [[file:../literate/ParserTests.org::*Parse labels][Parse labels:1]]
 it("Parses labels on blocks", async () => {
     const parsed = await parseFile("a: b");
-    expected.labelNextCell(Token.LabelIdentifier.create("a:"));
-    expected.appendValueBlock(Token.ValueIdentifier.create("b"));
+    expected.labelNextCell(Token.LabelIdentifier("a:"));
+    expected.appendValueBlock(Token.ValueIdentifier("b"));
     expect(parsed).toEqual(expected);
 })
 // Parse labels:1 ends here
@@ -110,9 +110,9 @@ it("Parses labels on blocks", async () => {
 // [[file:../literate/ParserTests.org::*Parse Op blocks and identifiers][Parse Op blocks and identifiers:1]]
 it("Parses op blocks and identifiers", async () => {
     const parsed = await parseFile("call! @address value");
-    expected.appendOpBlock(Token.CallIdentifier.create("call!"));
-    expected.appendValueBlock(Token.AddressIdentifier.create("@address"));
-    expected.appendValueBlock(Token.ValueIdentifier.create("value"));
+    expected.appendOpBlock(Token.CallIdentifier("call!"));
+    expected.appendValueBlock(Token.AddressIdentifier("@address"));
+    expected.appendValueBlock(Token.ValueIdentifier("value"));
     expect(parsed).toEqual(expected);
 })
 // Parse Op blocks and identifiers:1 ends here
@@ -125,19 +125,19 @@ it("asJS() works on a variety of blocks", async () => {
     const parsed = await parseFile("_ \"Hello World!\" 1 1.2");
     const [ blank, string, integer, decimal ] = parsed.tape.cells;
     
-    expect(blank).toEqual(ValueBlock(Token.Blank.create()));
+    expect(blank).toEqual(ValueBlock(Token.Blank()));
     expect(blank.asJS()).toEqual(null);
     
     expect(string).toEqual(
-        ValueBlock(Token.String.create("\"Hello World!\"")));
+        ValueBlock(Token.String("\"Hello World!\"")));
     expect(string.asJS()).toEqual("Hello World!");
     
     expect(integer).toEqual(
-        ValueBlock(Token.Number.create("1")));
+        ValueBlock(Token.Number("1")));
     expect(integer.asJS()).toEqual(1);
     
     expect(decimal).toEqual(
-        ValueBlock(Token.Number.create("1.2")));
+        ValueBlock(Token.Number("1.2")));
     expect(decimal.asJS()).toEqual(1.2);
 })
 // asJS() on blocks:1 ends here
@@ -148,11 +148,11 @@ it("asJS() errors on blocks which cannot be converted", async () => {
     const [ call, address, value ] = parsed.tape.cells;
     
     expect(call).toEqual(
-        OpBlock(Token.CallIdentifier.create("call!")));
+        OpBlock(Token.CallIdentifier("call!")));
     expect(() => value.asJS()).toThrowError();
-    expect(value).toEqual(ValueBlock(Token.ValueIdentifier.create("value")));
+    expect(value).toEqual(ValueBlock(Token.ValueIdentifier("value")));
     expect(() => value.asJS()).toThrowError();
-    expect(value).toEqual(ValueBlock(Token.ValueIdentifier.create("value")));
+    expect(value).toEqual(ValueBlock(Token.ValueIdentifier("value")));
     expect(() => value.asJS()).toThrowError();
 })
 // asJS() on blocks:2 ends here

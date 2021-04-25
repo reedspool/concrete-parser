@@ -252,30 +252,30 @@ export const config = {
             C.tokens = [];
         }),
         startValueIdentifierToken: assign((C, E) => {
-            C.currentToken = Token.ValueIdentifier.create(E.char)
+            C.currentToken = Token.ValueIdentifier(E.char)
         }),
         startStringToken: assign((C, E) => {
-            C.currentToken = Token.String.create(E.char)
+            C.currentToken = Token.String(E.char)
         }),
         startAddressIdentifierToken: assign((C, E) => {
-            C.currentToken = Token.AddressIdentifier.create(E.char)
+            C.currentToken = Token.AddressIdentifier(E.char)
         }),
         transposeToCallIdentifier: assign((C, E) => {
-            C.currentToken = Token.CallIdentifier.create(
+            C.currentToken = Token.CallIdentifier(
                 C.currentToken.original);
         }),
         transposeToLabelIdentifier: assign((C, E) => {
-            C.currentToken = Token.LabelIdentifier.create(
+            C.currentToken = Token.LabelIdentifier(
                 C.currentToken.original);
         }),
         startNumberToken: assign((C, E) => {
-            C.currentToken = Token.Number.create(E.char)
+            C.currentToken = Token.Number(E.char)
         }),
         insertBlankToken: assign((C, E) => {
-            C.tokens.push(Token.Blank.create());
+            C.tokens.push(Token.Blank());
         }),
         insertCommaToken: assign((C, E) => {
-            C.tokens.push(Token.Comma.create());
+            C.tokens.push(Token.Comma());
         }),
         addCharToCurrentToken: assign((C, E) => {
             C.currentToken.push(E.char);

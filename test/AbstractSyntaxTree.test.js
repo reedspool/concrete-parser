@@ -19,9 +19,9 @@ describe("Basics", () => {
 // [[file:../literate/AbstractSyntaxTreeTests.org::+begin_src js][No heading:2]]
 it("Can add Token to tape", () => {
     const tree = AbstractSyntaxTree();
-    tree.appendValueBlock(Token.Number.create("3"));
+    tree.appendValueBlock(Token.Number("3"));
     expect(tree.tape.cells).toEqual(
-        [ValueBlock(Token.Number.create("3"))]);
+        [ValueBlock(Token.Number("3"))]);
 })
 // No heading:2 ends here
 
@@ -35,7 +35,7 @@ it("Tree starts out empty", () => {
 // [[file:../literate/AbstractSyntaxTreeTests.org::+begin_src js][No heading:4]]
 it("Tree after adding a block is no longer empty", () => {
     const tree = AbstractSyntaxTree();
-    tree.appendValueBlock(Token.Number.create("3"));
+    tree.appendValueBlock(Token.Number("3"));
     expect(tree.isEmpty()).toBeFalsy();
 })
 // No heading:4 ends here

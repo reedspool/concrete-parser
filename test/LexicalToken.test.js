@@ -10,8 +10,8 @@ import { Token } from "../src/LexicalToken.js";
 
 // [[file:../literate/LexicalTokenTests.org::*ValueIdentifier][ValueIdentifier:1]]
 it("Simple ValueIdentifier", () => {
-    expect(Token.ValueIdentifier.create("abcd").finalize()).toEqual({
-        name: "ValueIdentifier",
+    expect(Token.ValueIdentifier("abcd").finalize()).toEqual({
+        kind: "ValueIdentifier",
         type: Token.ValueIdentifier.event,
         original: "abcd",
         identifier: "abcd"
@@ -19,11 +19,11 @@ it("Simple ValueIdentifier", () => {
 })
 
 it("ValueIdentifier can be added to", () => {
-    const token = Token.ValueIdentifier.create("a");
+    const token = Token.ValueIdentifier("a");
     token.push("b");
     token.finalize();
     expect(token).toEqual({
-        name: "ValueIdentifier",
+        kind: "ValueIdentifier",
         type: Token.ValueIdentifier.event,
         original: "ab",
         identifier: "ab"
@@ -36,8 +36,8 @@ it("ValueIdentifier can be added to", () => {
 
 // [[file:../literate/LexicalTokenTests.org::*CallIdentifier][CallIdentifier:1]]
 it("Simple CallIdentifier", () => {
-    expect(Token.CallIdentifier.create("abcd!").finalize()).toEqual({
-        name: "CallIdentifier",
+    expect(Token.CallIdentifier("abcd!").finalize()).toEqual({
+        kind: "CallIdentifier",
         type: Token.CallIdentifier.event,
         original: "abcd!",
         identifier: "abcd"
@@ -50,8 +50,8 @@ it("Simple CallIdentifier", () => {
 
 // [[file:../literate/LexicalTokenTests.org::*AddressIdentifier][AddressIdentifier:1]]
 it("Simple AddressIdentifier", () => {
-    expect(Token.AddressIdentifier.create("@abcd").finalize()).toEqual({
-        name: "AddressIdentifier",
+    expect(Token.AddressIdentifier("@abcd").finalize()).toEqual({
+        kind: "AddressIdentifier",
         type: Token.AddressIdentifier.event,
         original: "@abcd",
         identifier: "abcd"
@@ -64,8 +64,8 @@ it("Simple AddressIdentifier", () => {
 
 // [[file:../literate/LexicalTokenTests.org::*LabelIdentifier][LabelIdentifier:1]]
 it("Simple LabelIdentifier", () => {
-    expect(Token.LabelIdentifier.create("abcd:").finalize()).toEqual({
-        name: "LabelIdentifier",
+    expect(Token.LabelIdentifier("abcd:").finalize()).toEqual({
+        kind: "LabelIdentifier",
         type: Token.LabelIdentifier.event,
         original: "abcd:",
         identifier: "abcd"
@@ -78,15 +78,15 @@ it("Simple LabelIdentifier", () => {
 
 // [[file:../literate/LexicalTokenTests.org::*Blank][Blank:1]]
 it("Blank", () => {
-    expect(Token.Blank.create()).toEqual({
-        name: "Blank",
+    expect(Token.Blank()).toEqual({
+        kind: "Blank",
         type: Token.Blank.event,
         original: "_"
     })
 })
 
 it("Blank can NOT be added to", () => {
-    const token = Token.Blank.create();
+    const token = Token.Blank();
     expect(() => token.push("a")).toThrowError();
 })
 // Blank:1 ends here
@@ -96,18 +96,18 @@ it("Blank can NOT be added to", () => {
 
 // [[file:../literate/LexicalTokenTests.org::*Number][Number:1]]
 it("Number", () => {
-    expect(Token.Number.create("1")).toEqual({
-        name: "Number",
+    expect(Token.Number("1")).toEqual({
+        kind: "Number",
         type: Token.Number.event,
         original: "1"
     })
 })
 
 it("Number can be added to", () => {
-    const token = Token.Number.create("0");
+    const token = Token.Number("0");
     token.push("1");
     expect(token).toEqual({
-        name: "Number",
+        kind: "Number",
         type: Token.Number.event,
         original: "01"
     })
