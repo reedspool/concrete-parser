@@ -42,3 +42,16 @@ it("Basic tape", () => {
     expect(tape.asJS()).toEqual([ null ]);
 })
 // Basics:3 ends here
+
+// Making a block from a JS value
+
+
+// [[file:../literate/BlockTests.org::*Making a block from a JS value][Making a block from a JS value:1]]
+it("Number block from JS value, no token", () => {
+    const block = ValueBlock.fromJS(5);
+
+    expect(block.token).toBeUndefined();
+    expect(block.is(Category.Value)).toBe(true);
+    expect(block.asJS()).toEqual(5);
+})
+// Making a block from a JS value:1 ends here

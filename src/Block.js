@@ -42,6 +42,7 @@ Object.entries(Category).forEach(([ name, value ]) => {
 
 // [[file:../literate/Block.org::+begin_src js][No heading:4]]
 export const ValueBlock = (token) => new _Block(token, Category.Value);
+ValueBlock.fromJS = (js) => new _Block(undefined, Category.Value, js);
 export const OpBlock = (token) => new _Block(token, Category.Op);
 // No heading:4 ends here
 
@@ -52,9 +53,10 @@ export const OpBlock = (token) => new _Block(token, Category.Op);
 
 // [[file:../literate/Block.org::+begin_src js][No heading:5]]
 class _Block {
-    constructor(token, category) {
+    constructor(token, category, js) {
         this.token = token;
         this.category = category;
+        this.jsValue = js;
 
         this.token?.finalize();
         this.identifier = this.token?.identifier;

@@ -43,3 +43,15 @@ it("Basic tape", () => {
     expect(tape.asJS()).toEqual([ null ]);
 })
 #+end_src
+
+* Making a block from a JS value
+
+#+begin_src js
+it("Number block from JS value, no token", () => {
+    const block = ValueBlock.fromJS(5);
+
+    expect(block.token).toBeUndefined();
+    expect(block.is(Category.Value)).toBe(true);
+    expect(block.asJS()).toEqual(5);
+})
+#+end_src

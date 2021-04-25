@@ -2,7 +2,7 @@
 
 
 // [[file:../literate/IndexTests.org::*Preamble][Preamble:1]]
-import { parseFile, Category } from "../src/index";
+import { parseFile, Category, ValueBlock } from "../src/index";
 import * as Parser from "../src/Parser";
 import * as Block from "../src/Block";
 // Preamble:1 ends here
@@ -16,5 +16,7 @@ it("Exposes everything it needs to.", () => {
     expect(parseFile).toBe(Parser.parseFile);
     expect(Category).toBeDefined();
     expect(Category).toBe(Block.Category);
+    expect(ValueBlock).toBeDefined();
+    expect(ValueBlock).toBe(Block.ValueBlock);
 })
 // Tests:1 ends here

@@ -6,5 +6,5 @@
 
 // [[file:../literate/Index.org::+begin_src js][No heading:1]]
 export { parseFile } from "./Parser";
-export { Category } from "./Block";
+export { Category, ValueBlock } from "./Block";
 // No heading:1 ends here

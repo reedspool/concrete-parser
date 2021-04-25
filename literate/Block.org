@@ -32,6 +32,7 @@ There are two categories of blocks, "value" and "op". The distinction is that va
 
 #+begin_src js
 export const ValueBlock = (token) => new _Block(token, Category.Value);
+ValueBlock.fromJS = (js) => new _Block(undefined, Category.Value, js);
 export const OpBlock = (token) => new _Block(token, Category.Op);
 #+end_src
 
@@ -39,9 +40,10 @@ Always finalize a given token. If there is an identifier, lift it up to the bloc
 
 #+begin_src js
 class _Block {
-    constructor(token, category) {
+    constructor(token, category, js) {
         this.token = token;
         this.category = category;
+        this.jsValue = js;
 
         this.token?.finalize();
         this.identifier = this.token?.identifier;
