@@ -48,15 +48,15 @@ export const OpBlock = (token) => new _Block(token, Category.Op);
 
 
 
-// Always finalize a given token. If there is an identifier, lift it up to the block so users do not have to check the token exists and then inspect it.
+// Always finalize a given token. If there is an identifier or a jsValue present after finalizing, lift it up to the block so users do not have to check the token exists and then inspect it.
 
 
 // [[file:../literate/Block.org::+begin_src js][No heading:5]]
 class _Block {
-    constructor(token, category, js) {
+    constructor(token, category, jsValue) {
         this.token = token;
         this.category = category;
-        this.jsValue = js;
+        this.jsValue = jsValue;
 
         this.token?.finalize();
         this.identifier = this.token?.identifier;
@@ -85,20 +85,13 @@ class _Block {
     asJS() {
         if (typeof this.jsValue != "undefined") return this.jsValue;
 
-        if (this.token.is(Token.Blank)) {
-            this.jsValue = null;
-        }
-        else if (this.token.is(Token.Number)) {
-            this.jsValue = parseFloat(this.token.original);
-        }
-        else if (this.token.is(Token.String)) {
-            // TODO: HOW DO WE NOT USE EVAL HERE OTHER THAN CONSTRUCTING THE STRING IN A DIFFERENT WAY
-            this.jsValue = eval(this.token.original);
-        }
-        else {
-            throw new Error(`Block of token type ${this.token.name} cannot be converted to JS`);
-        }
+        // Returns undefined if unable to convert
+        this.jsValue = this.token.asJS();
         
+        if (typeof this.jsValue == "undefined") {
+            throw new Error(`Block of token type ${this.token.kind} cannot be converted to JS`);
+        }
+
         return this.jsValue;
     }
 // No heading:7 ends here

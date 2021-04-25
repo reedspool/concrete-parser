@@ -15,6 +15,12 @@ class _SimpleToken {
     }
 
     finalize() { /* noop */ return this; }
+
+    asJS() {
+        // Always return undefined if not specified in Token map
+        if (! Token[this.kind].asJS) return;
+        return Token[this.kind].asJS(this);
+    }
 }
 // Token Factories:1 ends here
 
@@ -103,15 +109,18 @@ Token.LabelIdentifier = {
 Token.Number = {
     event: "NUMBER",
     factory: ExpandableToken,
+    asJS: (token) => parseFloat(token.original)
 };
 Token.String = {
     event: "STRING",
     factory: ExpandableToken,
+    asJS: (token) => eval(token.original)
 };
 Token.Blank = {
     event: "BLANK",
     factory: SimpleToken,
-    literal: "_"
+    literal: "_",
+    asJS: (token) => null
 };
 Token.Comma = {
     event: "COMMA",

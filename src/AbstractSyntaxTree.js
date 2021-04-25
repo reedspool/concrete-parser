@@ -72,7 +72,7 @@ class _AbstractSyntaxTree {
             });
         }
         else {
-            throw new Error(`Unexpected parameter ${token.original}, ${token.name}`);
+            throw new Error(`Unexpected parameter ${token.original}, ${token.kind}`);
         }
     }
 
