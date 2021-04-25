@@ -24,8 +24,8 @@ Tests in this repo rely my package =xstate-jest-tools= which I have not yet publ
 =npm update= unfortunately does not work with github-installed modules. So, to install and to update, call this:
 
 #+begin_src sh :tangle no :results silent raw
-npm install -D https://github.com/reedspool/xstate-jest-tools
-npm install -D https://github.com/reedspool/inverted-promise
+npm install -D https://github.com/reedspool/xstate-jest-tools \
+    https://github.com/reedspool/inverted-promise
 #+end_src
 
 * How to generate source files in this project
