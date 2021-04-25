@@ -317,7 +317,8 @@ export const config = {
             throw new Error(`Bad Character: "${E.char}", type: ${E.type}`);
         },
         cleanupCurrentToken : assign((C, E) => {
-            C.tokens.push(C.currentToken)
+            C.currentToken.finalize();
+            C.tokens.push(C.currentToken);
             C.currentToken = null;
         })
     },

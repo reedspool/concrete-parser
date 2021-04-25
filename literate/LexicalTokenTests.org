@@ -11,24 +11,64 @@ import { Token } from "../src/LexicalToken.js";
 
 #+begin_src js
 it("Simple ValueIdentifier", () => {
-    expect(Token.ValueIdentifier.create("abcd")).toEqual({
+    expect(Token.ValueIdentifier.create("abcd").finalize()).toEqual({
         name: "ValueIdentifier",
         type: Token.ValueIdentifier.event,
-        original: "abcd"
+        original: "abcd",
+        identifier: "abcd"
     })
 })
 
 it("ValueIdentifier can be added to", () => {
     const token = Token.ValueIdentifier.create("a");
     token.push("b");
+    token.finalize();
     expect(token).toEqual({
         name: "ValueIdentifier",
         type: Token.ValueIdentifier.event,
-        original: "ab"
+        original: "ab",
+        identifier: "ab"
+    })
+})
+#+end_src
+* CallIdentifier
+
+#+begin_src js
+it("Simple CallIdentifier", () => {
+    expect(Token.CallIdentifier.create("abcd!").finalize()).toEqual({
+        name: "CallIdentifier",
+        type: Token.CallIdentifier.event,
+        original: "abcd!",
+        identifier: "abcd"
     })
 })
 #+end_src
 
+* AddressIdentifier
+
+#+begin_src js
+it("Simple AddressIdentifier", () => {
+    expect(Token.AddressIdentifier.create("@abcd").finalize()).toEqual({
+        name: "AddressIdentifier",
+        type: Token.AddressIdentifier.event,
+        original: "@abcd",
+        identifier: "abcd"
+    })
+})
+#+end_src
+
+* LabelIdentifier
+
+#+begin_src js
+it("Simple LabelIdentifier", () => {
+    expect(Token.LabelIdentifier.create("abcd:").finalize()).toEqual({
+        name: "LabelIdentifier",
+        type: Token.LabelIdentifier.event,
+        original: "abcd:",
+        identifier: "abcd"
+    })
+});
+#+end_src
 * Blank
 
 #+begin_src js

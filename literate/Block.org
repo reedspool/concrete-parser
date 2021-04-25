@@ -35,11 +35,15 @@ export const ValueBlock = (token) => new _Block(token, Category.Value);
 export const OpBlock = (token) => new _Block(token, Category.Op);
 #+end_src
 
+Always finalize the given token.
+
 #+begin_src js
 class _Block {
     constructor(token, category) {
         this.token = token;
         this.category = category;
+
+        this.token.finalize();
     }
 #+end_src
 

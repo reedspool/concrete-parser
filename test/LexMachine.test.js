@@ -71,7 +71,7 @@ it("Lexes a simple alphabetic ValueIdentifier", () => {
     streamFile("abc", streamCallback);
     expect(interpreter.S).toMatchState("done");
     expect(interpreter.C.tokens).toEqual(
-        [ Token.ValueIdentifier.create("abc") ]);
+        [ Token.ValueIdentifier.create("abc").finalize() ]);
 })
 // Value Identifier:1 ends here
 
@@ -85,7 +85,7 @@ it("Lexes a complex mixed ValueIdentifier", () => {
     streamFile("a0_z", streamCallback);
     expect(interpreter.S).toMatchState("done");
     expect(interpreter.C.tokens).toEqual(
-        [ Token.ValueIdentifier.create("a0_z") ]);
+        [ Token.ValueIdentifier.create("a0_z").finalize() ]);
 })
 // Value Identifier:2 ends here
 
@@ -99,7 +99,7 @@ it("Lexes a simple alphabetic AddressIdentifier", () => {
     streamFile("@abc", streamCallback);
     expect(interpreter.S).toMatchState("done");
     expect(interpreter.C.tokens).toEqual(
-        [ Token.AddressIdentifier.create("@abc") ]);
+        [ Token.AddressIdentifier.create("@abc").finalize() ]);
 })
 // Address Identifier:1 ends here
 
@@ -113,7 +113,7 @@ it("Lexes a complex mixed AddressIdentifier", () => {
     streamFile("@a0_z", streamCallback);
     expect(interpreter.S).toMatchState("done");
     expect(interpreter.C.tokens).toEqual(
-        [ Token.AddressIdentifier.create("@a0_z") ]);
+        [ Token.AddressIdentifier.create("@a0_z").finalize() ]);
 })
 // Address Identifier:2 ends here
 
@@ -125,7 +125,7 @@ it("Lexes a simple alphabetic LabelIdentifier", () => {
     streamFile("abc:", streamCallback);
     expect(interpreter.S).toMatchState("done");
     expect(interpreter.C.tokens).toEqual(
-        [ Token.LabelIdentifier.create("abc:") ]);
+        [ Token.LabelIdentifier.create("abc:").finalize() ]);
 })
 // Label Identifiers:1 ends here
 
@@ -139,7 +139,7 @@ it("Lexes a complex mixed LabelIdentifier", () => {
     streamFile("a0_z:", streamCallback);
     expect(interpreter.S).toMatchState("done");
     expect(interpreter.C.tokens).toEqual(
-        [ Token.LabelIdentifier.create("a0_z:") ]);
+        [ Token.LabelIdentifier.create("a0_z:").finalize() ]);
 })
 // Label Identifiers:2 ends here
 
@@ -151,7 +151,7 @@ it("Lexes a simple alphabetic CallIdentifier", () => {
     streamFile("abc!", streamCallback);
     expect(interpreter.S).toMatchState("done");
     expect(interpreter.C.tokens).toEqual(
-        [ Token.CallIdentifier.create("abc!") ]);
+        [ Token.CallIdentifier.create("abc!").finalize() ]);
 })
 // Call Identifiers:1 ends here
 
@@ -165,7 +165,7 @@ it("Lexes a complex mixed CallIdentifier", () => {
     streamFile("a0_z!", streamCallback);
     expect(interpreter.S).toMatchState("done");
     expect(interpreter.C.tokens).toEqual(
-        [ Token.CallIdentifier.create("a0_z!") ]);
+        [ Token.CallIdentifier.create("a0_z!").finalize() ]);
 })
 // Call Identifiers:2 ends here
 
@@ -275,9 +275,9 @@ it("Lexes whitespace separated tokens", () => {
     expect(interpreter.S).toMatchState("done");
     expect(interpreter.C.tokens).toEqual(
         [
-            Token.ValueIdentifier.create("ab"),
+            Token.ValueIdentifier.create("ab").finalize(),
             Token.Blank.create(),
-            Token.ValueIdentifier.create("z"),
+            Token.ValueIdentifier.create("z").finalize(),
             Token.Number.create("3"),
             Token.Number.create("33.44")
         ]);

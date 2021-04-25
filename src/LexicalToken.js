@@ -13,6 +13,8 @@ class _SimpleToken {
     is(token) {
         return this.name == token.name;
     }
+
+    finalize() { /* noop */ return this; }
 }
 // Token Factories:1 ends here
 
@@ -32,8 +34,49 @@ class _ExpandableToken extends _SimpleToken {
     push(char) {
         this.original += char;
     }
+    
+    finalize() { /* noop */ return this; }
 }
 // Token Factories:2 ends here
+
+
+
+// Now we make specific factories for all identifier tokens, who extract the text of the identifier from the syntax that created it, e.g. =add!= is a CallIdentifier but the identifier is just "add".
+
+// The simplest is a value identifier, where the identifier is the original exactly. This seems like a useless addition if they're just the same, but if all the identifiers work the same way it makes other code much simpler.
+
+
+// [[file:../literate/LexicalToken.org::*Token Factories][Token Factories:3]]
+const ValueIdentifierToken = (...args) => new _ValueIdentifierToken(...args);
+
+class _ValueIdentifierToken extends _ExpandableToken {
+    finalize() { this.identifier = this.original; return this; }
+}
+// Token Factories:3 ends here
+
+// [[file:../literate/LexicalToken.org::*Token Factories][Token Factories:4]]
+const AddressIdentifierToken = (...args) => new _AddressIdentifierToken(...args);
+
+class _AddressIdentifierToken extends _ExpandableToken {
+    finalize() { this.identifier = this.original.replace("@", ""); return this; }
+}
+// Token Factories:4 ends here
+
+// [[file:../literate/LexicalToken.org::*Token Factories][Token Factories:5]]
+const CallIdentifierToken = (...args) => new _CallIdentifierToken(...args);
+
+class _CallIdentifierToken extends _ExpandableToken {
+    finalize() { this.identifier = this.original.replace("!", ""); return this; }
+}
+// Token Factories:5 ends here
+
+// [[file:../literate/LexicalToken.org::*Token Factories][Token Factories:6]]
+const LabelIdentifierToken = (...args) => new _LabelIdentifierToken(...args);
+
+class _LabelIdentifierToken extends _ExpandableToken {
+    finalize() { this.identifier = this.original.replace(":", ""); return this; }
+}
+// Token Factories:6 ends here
 
 // Token
 // A data structure mapping token names to information about it.
@@ -43,19 +86,19 @@ class _ExpandableToken extends _SimpleToken {
 export const Token = {};
 Token.ValueIdentifier = {
     event: "VALUE_IDENTIFIER",
-    factory: ExpandableToken,
+    factory: ValueIdentifierToken,
 };
 Token.AddressIdentifier = {
     event: "ADDRESS_IDENTIFIER",
-    factory: ExpandableToken,
+    factory: AddressIdentifierToken,
 };
 Token.CallIdentifier = {
     event: "CALL_IDENTIFIER",
-    factory: ExpandableToken,
+    factory: CallIdentifierToken,
 };
 Token.LabelIdentifier = {
     event: "LABEL_IDENTIFIER",
-    factory: ExpandableToken,
+    factory: LabelIdentifierToken,
 };
 Token.Number = {
     event: "NUMBER",
@@ -116,8 +159,9 @@ Token.CloseInlineTape = {
 Object.entries(Token).forEach(([name, value]) => {
     value.name = name;
     
-    if (value.factory == ExpandableToken) {
-        value.create = (char) => ExpandableToken(name, value.event, char);
+    // All complex factories are called the same way
+    if (value.factory !== SimpleToken) {
+        value.create = (char) => value.factory(name, value.event, char);
     }
     else if (value.factory == SimpleToken) {
         value.create = () => SimpleToken(name, value.event, value.literal);

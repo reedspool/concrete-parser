@@ -45,11 +45,18 @@ export const ValueBlock = (token) => new _Block(token, Category.Value);
 export const OpBlock = (token) => new _Block(token, Category.Op);
 // No heading:4 ends here
 
+
+
+// Always finalize the given token.
+
+
 // [[file:../literate/Block.org::+begin_src js][No heading:5]]
 class _Block {
     constructor(token, category) {
         this.token = token;
         this.category = category;
+
+        this.token.finalize();
     }
 // No heading:5 ends here
 
