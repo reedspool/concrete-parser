@@ -173,6 +173,10 @@ class _Tape {
         return this.cells[this.labelsToIndex[label]];
     }
 
+    setBlockAtLabel (label, block) {
+        return this.cells[this.labelsToIndex[label]] = block;
+    }
+
     asJS() {
         return this.cells.map(block => block.asJS());
     }
