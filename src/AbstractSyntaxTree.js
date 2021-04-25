@@ -37,7 +37,7 @@ class _AbstractSyntaxTree {
 
     labelNextCell(token) {
         this.tape.setLabel(
-            token, this.tape.cells.length);
+            token.identifier, this.tape.cells.length);
     }
 
     openTape(isInline) {

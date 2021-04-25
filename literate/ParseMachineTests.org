@@ -7,7 +7,7 @@
 import * as ParseMachine from "../src/ParseMachine.js";
 import { Machine, interpret } from "xstate";
 import { Token } from "../src/LexicalToken";
-import { Block, Tape } from "../src/Block";
+import { ValueBlock, Tape } from "../src/Block";
 import { InvertedPromise as Promise } from "inverted-promise";
 import { AbstractSyntaxTree } from "../src/AbstractSyntaxTree"
 import { TestInterpreter, toMatchState } from "xstate-jest-tools";
@@ -58,9 +58,9 @@ Labels are a quality of a tape. They name the specific cell of the block which c
 
 #+begin_src js
 it("Parses a blank with a label", () => {
-    tree.labelNextCell(Token.LabelIdentifier("abcd"));
+    tree.labelNextCell(Token.LabelIdentifier("abcd").finalize());
     tree.appendValueBlock(Token.Blank());
-    interpreter.send(Token.LabelIdentifier("abcd"));
+    interpreter.send(Token.LabelIdentifier("abcd").finalize());
     interpreter.send(Token.Blank());
     interpreter.send("DONE");
 
@@ -70,12 +70,13 @@ it("Parses a blank with a label", () => {
         .toEqual("abcd");
     expect(interpreter.C.tree.tape.labelsToIndex["abcd"])
         .toEqual(0);
+    expect(interpreter.C.tree.tape.getBlockAtLabel("abcd")).toEqual(ValueBlock(Token.Blank()))
 })
 #+end_src
 
 #+begin_src js
 it("A label followed by a label is an error", () => {
-    interpreter.send(Token.LabelIdentifier("abcd"));
+    interpreter.send(Token.LabelIdentifier("abcd").finalize());
     expect(interpreter.S).toMatchState("ready.label.expectingBlock");
     const fn = () =>
         interpreter.send(Token.LabelIdentifier("abcd"));

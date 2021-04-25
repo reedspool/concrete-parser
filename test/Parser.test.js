@@ -98,8 +98,8 @@ it("Parses a few blocks with commas", async () => {
 // [[file:../literate/ParserTests.org::*Parse labels][Parse labels:1]]
 it("Parses labels on blocks", async () => {
     const parsed = await parseFile("a: b");
-    expected.labelNextCell(Token.LabelIdentifier("a:"));
-    expected.appendValueBlock(Token.ValueIdentifier("b"));
+    expected.labelNextCell(Token.LabelIdentifier("a:").finalize());
+    expected.appendValueBlock(Token.ValueIdentifier("b").finalize());
     expect(parsed).toEqual(expected);
 })
 // Parse labels:1 ends here

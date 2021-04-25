@@ -5,7 +5,7 @@
 import * as ParseMachine from "../src/ParseMachine.js";
 import { Machine, interpret } from "xstate";
 import { Token } from "../src/LexicalToken";
-import { Block, Tape } from "../src/Block";
+import { ValueBlock, Tape } from "../src/Block";
 import { InvertedPromise as Promise } from "inverted-promise";
 import { AbstractSyntaxTree } from "../src/AbstractSyntaxTree"
 import { TestInterpreter, toMatchState } from "xstate-jest-tools";
@@ -61,9 +61,9 @@ it("Parses just a blank", () => {
 
 // [[file:../literate/ParseMachineTests.org::*Labels][Labels:1]]
 it("Parses a blank with a label", () => {
-    tree.labelNextCell(Token.LabelIdentifier("abcd"));
+    tree.labelNextCell(Token.LabelIdentifier("abcd").finalize());
     tree.appendValueBlock(Token.Blank());
-    interpreter.send(Token.LabelIdentifier("abcd"));
+    interpreter.send(Token.LabelIdentifier("abcd").finalize());
     interpreter.send(Token.Blank());
     interpreter.send("DONE");
 
@@ -73,12 +73,13 @@ it("Parses a blank with a label", () => {
         .toEqual("abcd");
     expect(interpreter.C.tree.tape.labelsToIndex["abcd"])
         .toEqual(0);
+    expect(interpreter.C.tree.tape.getBlockAtLabel("abcd")).toEqual(ValueBlock(Token.Blank()))
 })
 // Labels:1 ends here
 
 // [[file:../literate/ParseMachineTests.org::*Labels][Labels:2]]
 it("A label followed by a label is an error", () => {
-    interpreter.send(Token.LabelIdentifier("abcd"));
+    interpreter.send(Token.LabelIdentifier("abcd").finalize());
     expect(interpreter.S).toMatchState("ready.label.expectingBlock");
     const fn = () =>
         interpreter.send(Token.LabelIdentifier("abcd"));

@@ -113,9 +113,13 @@ class _Tape {
         this.commas[this.cells.length] = true;
     }
 
-    setLabel (token, index) {
-        this.labelsByIndex[index] = token.original;
-        this.labelsToIndex[token.original] = index;
+    setLabel (label, index) {
+        this.labelsByIndex[index] = label;
+        this.labelsToIndex[label] = index;
+    }
+
+    getBlockAtLabel (label) {
+        return this.cells[this.labelsToIndex[label]];
     }
 
     asJS() {
