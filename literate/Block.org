@@ -35,7 +35,7 @@ export const ValueBlock = (token) => new _Block(token, Category.Value);
 export const OpBlock = (token) => new _Block(token, Category.Op);
 #+end_src
 
-Always finalize the given token.
+Always finalize a given token. If there is an identifier, lift it up to the block so users do not have to check the token exists and then inspect it.
 
 #+begin_src js
 class _Block {
@@ -43,7 +43,8 @@ class _Block {
         this.token = token;
         this.category = category;
 
-        this.token.finalize();
+        this.token?.finalize();
+        this.identifier = this.token?.identifier;
     }
 #+end_src
 

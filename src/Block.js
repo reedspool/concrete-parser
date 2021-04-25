@@ -47,7 +47,7 @@ export const OpBlock = (token) => new _Block(token, Category.Op);
 
 
 
-// Always finalize the given token.
+// Always finalize a given token. If there is an identifier, lift it up to the block so users do not have to check the token exists and then inspect it.
 
 
 // [[file:../literate/Block.org::+begin_src js][No heading:5]]
@@ -56,7 +56,8 @@ class _Block {
         this.token = token;
         this.category = category;
 
-        this.token.finalize();
+        this.token?.finalize();
+        this.identifier = this.token?.identifier;
     }
 // No heading:5 ends here
 
