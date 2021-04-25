@@ -64,7 +64,7 @@ class _AbstractSyntaxTree {
         else if (token.is(Token.LabelIdentifier) ||
                 token.is(Token.ValueIdentifier)) {
             if (this.parameterNameAlreadyUsed(token)) {
-                throw new Error(`Duplicate parameter names not allowed: ${token.original}`);
+                throw new Error(`Duplicate parameter names not allowed: ${token.identifier}`);
             }
 
             this.unfinishedParameterList.push({
@@ -78,7 +78,7 @@ class _AbstractSyntaxTree {
 
     parameterNameAlreadyUsed(token) {
         return this.unfinishedParameterList.find(param =>
-            param.label.original == token.original);
+            param.label.identifier == token.identifier);
     }
 }
 // No heading:3 ends here

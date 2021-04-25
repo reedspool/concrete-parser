@@ -165,17 +165,17 @@ it("Parses an empty tape with an empty param list", () => {
 
 // [[file:../literate/ParseMachineTests.org::*Tapes][Tapes:3]]
 it("Parses an empty tape with a param list", () => {
-    tree.addParamForNextTape(Token.ValueIdentifier("meow"));
-    tree.addParamForNextTape(Token.LabelIdentifier("abcd"));
-    tree.addParamForNextTape(Token.ValueIdentifier("cheese"));
+    tree.addParamForNextTape(Token.ValueIdentifier("meow").finalize());
+    tree.addParamForNextTape(Token.LabelIdentifier("abcd").finalize());
+    tree.addParamForNextTape(Token.ValueIdentifier("cheese").finalize());
     tree.openTape();
     tree.closeTape();
     interpreter.send(Token.OpenParams());
     expect(interpreter.S).toMatchState("ready.params.open");
-    interpreter.send(Token.ValueIdentifier("meow"));
-    interpreter.send(Token.LabelIdentifier("abcd"));
+    interpreter.send(Token.ValueIdentifier("meow").finalize());
+    interpreter.send(Token.LabelIdentifier("abcd").finalize());
     expect(interpreter.S).toMatchState("ready.params.expectingDefaultValue");
-    interpreter.send(Token.ValueIdentifier("cheese"));
+    interpreter.send(Token.ValueIdentifier("cheese").finalize());
     interpreter.send(Token.CloseParams("meow"));
     expect(interpreter.S).toMatchState("ready.params.expectingTape");
     interpreter.send(Token.OpenTape());
@@ -192,8 +192,8 @@ it("Parses an empty tape with a param list", () => {
 it("Duplicate parameter labels error", () => {
     interpreter.send(Token.OpenParams());
     expect(interpreter.S).toMatchState("ready.params.open");
-    interpreter.send(Token.ValueIdentifier("meow"));
-    const fn = () => interpreter.send(Token.LabelIdentifier("meow"));
+    interpreter.send(Token.ValueIdentifier("meow").finalize());
+    const fn = () => interpreter.send(Token.LabelIdentifier("meow").finalize());
 
     expect(fn).toThrowError();
 })
