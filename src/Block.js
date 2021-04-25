@@ -39,38 +39,61 @@ Object.entries(Category).forEach(([ name, value ]) => {
 
 // There are two categories of blocks, "value" and "op". The distinction is that values become arguments when executed, whereas ops do anything and everything else a program can do.
 
+// Subcategories are equivalent to the "kind" of token or the type of the JS value used to create it.
+
 
 // [[file:../literate/Block.org::+begin_src js][No heading:4]]
+const jsTypesToKind = {
+    number: Token.Number.kind,
+    string: Token.String.kind,
+    null: Token.Blank.kind
+};
+// No heading:4 ends here
+
+// [[file:../literate/Block.org::+begin_src js][No heading:5]]
 export const ValueBlock = (token) => new _Block(token, Category.Value);
 ValueBlock.fromJS = (js) => new _Block(undefined, Category.Value, js);
 export const OpBlock = (token) => new _Block(token, Category.Op);
-// No heading:4 ends here
+// No heading:5 ends here
 
 
 
 // Always finalize a given token. If there is an identifier or a jsValue present after finalizing, lift it up to the block so users do not have to check the token exists and then inspect it.
 
 
-// [[file:../literate/Block.org::+begin_src js][No heading:5]]
+// [[file:../literate/Block.org::+begin_src js][No heading:6]]
 class _Block {
     constructor(token, category, jsValue) {
-        this.token = token;
-        this.category = category;
         this.jsValue = jsValue;
 
-        this.token?.finalize();
-        this.identifier = this.token?.identifier;
+        // Copy category so we can modify it with determined kind
+        this.category = { ...category };
+
+        if (token) {
+            token.finalize();
+            this.identifier = token.identifier;
+            this.token = token;
+            this.category.kind = token.kind;
+        }
+        else if (jsValue) {
+            const kind = jsTypesToKind[typeof jsValue];
+
+            if (! kind) throw new Error(`No kind defined for JS value "${jsValue}", type "${typeof jsValue}"`);
+            
+            this.category.kind = kind;
+        }
+        else throw new Error("Block must be constructed with initial Token or JS Value");
     }
-// No heading:5 ends here
+// No heading:6 ends here
 
 
 
 // We want to easily check which category a block belongs to, e.g. =myBlock.is(Category.Value)=.
 
 
-// [[file:../literate/Block.org::+begin_src js][No heading:6]]
-    is(category) { return this.category.name == category.name; }
-// No heading:6 ends here
+// [[file:../literate/Block.org::+begin_src js][No heading:7]]
+    is(category, kind) { return this.category.name == category.name && (! kind || this.category.kind == kind ); }
+// No heading:7 ends here
 
 
 
@@ -81,7 +104,7 @@ class _Block {
 // Blocks are immutable so we can cache the value instead of recalculating it.
 
 
-// [[file:../literate/Block.org::+begin_src js][No heading:7]]
+// [[file:../literate/Block.org::+begin_src js][No heading:8]]
     asJS() {
         if (typeof this.jsValue != "undefined") return this.jsValue;
 
@@ -94,27 +117,27 @@ class _Block {
 
         return this.jsValue;
     }
-// No heading:7 ends here
+// No heading:8 ends here
 
 
 
 // Close the block class
 
 
-// [[file:../literate/Block.org::+begin_src js][No heading:8]]
+// [[file:../literate/Block.org::+begin_src js][No heading:9]]
 }
-// No heading:8 ends here
+// No heading:9 ends here
 
 
 
 // A tape is a container of blocks. It is always of category "Value".
 
 
-// [[file:../literate/Block.org::+begin_src js][No heading:9]]
-export const Tape = (...args) => new _Tape(...args);
-// No heading:9 ends here
-
 // [[file:../literate/Block.org::+begin_src js][No heading:10]]
+export const Tape = (...args) => new _Tape(...args);
+// No heading:10 ends here
+
+// [[file:../literate/Block.org::+begin_src js][No heading:11]]
 class _Tape {
     constructor (isInline, params = []) {
         this.cells = [];
@@ -123,7 +146,10 @@ class _Tape {
         this.labelsByIndex = [];
         this.labelsToIndex = {};
         this.isInline = isInline;
-        this.category = Category.Value;
+        
+        // Copy category to mutate
+        this.category = { ...Category.Value };
+        this.category.kind = "Tape";
     }
     
     is(category) { return this.category.name == category.name; }
@@ -151,4 +177,4 @@ class _Tape {
         return this.cells.map(block => block.asJS());
     }
 }
-// No heading:10 ends here
+// No heading:11 ends here

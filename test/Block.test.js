@@ -15,6 +15,7 @@ it("Basic value block", () => {
     expect(block.token).toEqual(token);
     expect(block.asJS()).toEqual(null);
     expect(block.is(Category.Value)).toBe(true);
+    expect(block.is(Category.Value, Token.Blank.kind)).toBe(true);
 })
 // Basics:1 ends here
 
@@ -24,6 +25,7 @@ it("Basic op block", () => {
     const block = OpBlock(token);
     expect(block.token).toEqual(token);
     expect(block.is(Category.Op)).toBe(true);
+    expect(block.is(Category.Op, Token.CallIdentifier.kind)).toBe(true);
     expect(block.category.name).toBe("Op");
 })
 // Basics:2 ends here
@@ -38,7 +40,7 @@ it("Basic tape", () => {
     
     expect(tape.cells.length).toBe(1);
     expect(tape.cells[0]).toEqual(block);
-    expect(tape.is(Category.Value)).toBe(true);
+    expect(tape.is(Category.Value, "Tape")).toBe(true);
     expect(tape.asJS()).toEqual([ null ]);
 })
 // Basics:3 ends here

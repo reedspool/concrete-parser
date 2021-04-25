@@ -30,6 +30,16 @@ Object.entries(Category).forEach(([ name, value ]) => {
 
 There are two categories of blocks, "value" and "op". The distinction is that values become arguments when executed, whereas ops do anything and everything else a program can do.
 
+Subcategories are equivalent to the "kind" of token or the type of the JS value used to create it.
+
+#+begin_src js
+const jsTypesToKind = {
+    number: Token.Number.kind,
+    string: Token.String.kind,
+    null: Token.Blank.kind
+};
+#+end_src
+
 #+begin_src js
 export const ValueBlock = (token) => new _Block(token, Category.Value);
 ValueBlock.fromJS = (js) => new _Block(undefined, Category.Value, js);
@@ -41,19 +51,32 @@ Always finalize a given token. If there is an identifier or a jsValue present af
 #+begin_src js
 class _Block {
     constructor(token, category, jsValue) {
-        this.token = token;
-        this.category = category;
         this.jsValue = jsValue;
 
-        this.token?.finalize();
-        this.identifier = this.token?.identifier;
+        // Copy category so we can modify it with determined kind
+        this.category = { ...category };
+
+        if (token) {
+            token.finalize();
+            this.identifier = token.identifier;
+            this.token = token;
+            this.category.kind = token.kind;
+        }
+        else if (jsValue) {
+            const kind = jsTypesToKind[typeof jsValue];
+
+            if (! kind) throw new Error(`No kind defined for JS value "${jsValue}", type "${typeof jsValue}"`);
+            
+            this.category.kind = kind;
+        }
+        else throw new Error("Block must be constructed with initial Token or JS Value");
     }
 #+end_src
 
 We want to easily check which category a block belongs to, e.g. =myBlock.is(Category.Value)=.
 
 #+begin_src js
-    is(category) { return this.category.name == category.name; }
+    is(category, kind) { return this.category.name == category.name && (! kind || this.category.kind == kind ); }
 #+end_src
 
 Any value block can exit the Concrete environment into JavaScript land.
@@ -98,7 +121,10 @@ class _Tape {
         this.labelsByIndex = [];
         this.labelsToIndex = {};
         this.isInline = isInline;
-        this.category = Category.Value;
+        
+        // Copy category to mutate
+        this.category = { ...Category.Value };
+        this.category.kind = "Tape";
     }
     
     is(category) { return this.category.name == category.name; }
