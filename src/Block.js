@@ -92,7 +92,10 @@ class _Block {
 
 
 // [[file:../literate/Block.org::+begin_src js][No heading:7]]
-    is(category, kind) { return this.category.name == category.name && (! kind || this.category.kind == kind ); }
+    is(category, kind) {
+        return this.category.name == category.name &&
+            (! kind || this.category.kind == kind);
+    }
 // No heading:7 ends here
 
 
@@ -152,7 +155,10 @@ class _Tape {
         this.category.kind = "Tape";
     }
     
-    is(category) { return this.category.name == category.name; }
+    is(category, kind) {
+        return this.category.name == category.name &&
+            (! kind || this.category.kind == kind);
+    }
 
     isEmpty() { return this.cells.length == 0; }
 

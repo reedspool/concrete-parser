@@ -76,7 +76,10 @@ class _Block {
 We want to easily check which category a block belongs to, e.g. =myBlock.is(Category.Value)=.
 
 #+begin_src js
-    is(category, kind) { return this.category.name == category.name && (! kind || this.category.kind == kind ); }
+    is(category, kind) {
+        return this.category.name == category.name &&
+            (! kind || this.category.kind == kind);
+    }
 #+end_src
 
 Any value block can exit the Concrete environment into JavaScript land.
@@ -127,7 +130,10 @@ class _Tape {
         this.category.kind = "Tape";
     }
     
-    is(category) { return this.category.name == category.name; }
+    is(category, kind) {
+        return this.category.name == category.name &&
+            (! kind || this.category.kind == kind);
+    }
 
     isEmpty() { return this.cells.length == 0; }
 
