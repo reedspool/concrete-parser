@@ -117,6 +117,18 @@ it("Parses op blocks and identifiers", async () => {
 })
 // Parse Op blocks and identifiers:1 ends here
 
+// Parse tapes
+
+
+// [[file:../literate/ParserTests.org::*Parse tapes][Parse tapes:1]]
+it("Parses an empty tape", async () => {
+    const parsed = await parseFile("()[]");
+    expected.openTape();
+    expected.closeTape();
+    expect(parsed).toEqual(expected);
+})
+// Parse tapes:1 ends here
+
 // asJS() on blocks
 
 

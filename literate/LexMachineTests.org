@@ -225,6 +225,26 @@ it("Lexes a string with an escaped double quote", () => {
 })
 #+end_src
 
+* Tapes
+
+#+begin_src js
+it("Lexes an empty tape", () => {
+    streamFile("[]", streamCallback);
+    expect(interpreter.S).toMatchState("done");
+    expect(interpreter.C.tokens).toEqual(
+        [ Token.OpenTape(), Token.CloseTape() ]);
+})
+#+end_src
+
+#+begin_src js
+it("Lexes an empty tape with params", () => {
+    streamFile("()[]", streamCallback);
+    expect(interpreter.S).toMatchState("done");
+    expect(interpreter.C.tokens).toEqual(
+        [ Token.OpenParams(), Token.CloseParams(), Token.OpenTape(), Token.CloseTape() ]);
+})
+#+end_src
+
 * All together
 
 Can't be both an AddressIdentifier and a CallIdentifier
@@ -251,6 +271,27 @@ it("Lexes whitespace separated tokens", () => {
             Token.ValueIdentifier("z").finalize(),
             Token.Number("3"),
             Token.Number("33.44")
+        ]);
+})
+#+end_src
+
+What about everything inside a tape?
+
+#+begin_src js
+it("Lexes a variety of tokens inside a tape", () => {
+    streamFile("()[ ab _ z 3 33.44 ]", streamCallback);
+    expect(interpreter.S).toMatchState("done");
+    expect(interpreter.C.tokens).toEqual(
+        [
+            Token.OpenParams(),
+            Token.CloseParams(),
+            Token.OpenTape(),
+            Token.ValueIdentifier("ab").finalize(),
+            Token.Blank(),
+            Token.ValueIdentifier("z").finalize(),
+            Token.Number("3"),
+            Token.Number("33.44"),
+            Token.CloseTape(),
         ]);
 })
 #+end_src

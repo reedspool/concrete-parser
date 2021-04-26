@@ -72,6 +72,10 @@ export const definition = {
             on: {
                 [Kind.Underscore.event] : { actions : ["insertBlankToken"] },
                 [Kind.Comma.event] : { actions: ["insertCommaToken"] },
+                [Kind.OpenTape.event] : { actions: ["insertOpenTapeToken"] },
+                [Kind.CloseTape.event] : { actions: ["insertCloseTapeToken"] },
+                [Kind.OpenParams.event] : { actions: ["insertOpenParamsToken"] },
+                [Kind.CloseParams.event] : { actions: ["insertCloseParamsToken"] },
                 [Kind.Alphabetic.event] : {
                     target: "identifier",
                     actions: ["startValueIdentifierToken"],
@@ -309,6 +313,18 @@ export const config = {
         }),
         insertCommaToken: assign((C, E) => {
             C.tokens.push(Token.Comma());
+        }),
+        insertOpenTapeToken: assign((C, E) => {
+            C.tokens.push(Token.OpenTape());
+        }),
+        insertCloseTapeToken: assign((C, E) => {
+            C.tokens.push(Token.CloseTape());
+        }),
+        insertOpenParamsToken: assign((C, E) => {
+            C.tokens.push(Token.OpenParams());
+        }),
+        insertCloseParamsToken: assign((C, E) => {
+            C.tokens.push(Token.CloseParams());
         }),
         addCharToCurrentToken: assign((C, E) => {
             C.currentToken.push(E.char);

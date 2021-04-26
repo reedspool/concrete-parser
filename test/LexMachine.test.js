@@ -250,6 +250,27 @@ it("Lexes a string with an escaped double quote", () => {
 })
 // Strings:3 ends here
 
+// Tapes
+
+
+// [[file:../literate/LexMachineTests.org::*Tapes][Tapes:1]]
+it("Lexes an empty tape", () => {
+    streamFile("[]", streamCallback);
+    expect(interpreter.S).toMatchState("done");
+    expect(interpreter.C.tokens).toEqual(
+        [ Token.OpenTape(), Token.CloseTape() ]);
+})
+// Tapes:1 ends here
+
+// [[file:../literate/LexMachineTests.org::*Tapes][Tapes:2]]
+it("Lexes an empty tape with params", () => {
+    streamFile("()[]", streamCallback);
+    expect(interpreter.S).toMatchState("done");
+    expect(interpreter.C.tokens).toEqual(
+        [ Token.OpenParams(), Token.CloseParams(), Token.OpenTape(), Token.CloseTape() ]);
+})
+// Tapes:2 ends here
+
 // All together
 
 // Can't be both an AddressIdentifier and a CallIdentifier
@@ -283,6 +304,30 @@ it("Lexes whitespace separated tokens", () => {
         ]);
 })
 // All together:2 ends here
+
+
+
+// What about everything inside a tape?
+
+
+// [[file:../literate/LexMachineTests.org::*All together][All together:3]]
+it("Lexes a variety of tokens inside a tape", () => {
+    streamFile("()[ ab _ z 3 33.44 ]", streamCallback);
+    expect(interpreter.S).toMatchState("done");
+    expect(interpreter.C.tokens).toEqual(
+        [
+            Token.OpenParams(),
+            Token.CloseParams(),
+            Token.OpenTape(),
+            Token.ValueIdentifier("ab").finalize(),
+            Token.Blank(),
+            Token.ValueIdentifier("z").finalize(),
+            Token.Number("3"),
+            Token.Number("33.44"),
+            Token.CloseTape(),
+        ]);
+})
+// All together:3 ends here
 
 // XState Interpreter =onDone()=
 

@@ -120,7 +120,6 @@ export const definition = {
 // [[file:../literate/ParseMachine.org::*Definition][Definition:6]]
                 [Token.OpenParams.event] : {
                     target: [ ".label.any", ".params.open" ],
-                    actions: [ "openParams" ]
                 },
             },
 // Definition:6 ends here

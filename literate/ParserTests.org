@@ -37,7 +37,6 @@ it("Can parse a file of only whitespace and produce a blank tree", async () => {
 })
 #+end_src
 
-
 * Parse Single Block Tests
 
 #+begin_src js
@@ -105,6 +104,17 @@ it("Parses op blocks and identifiers", async () => {
     expected.appendOpBlock(Token.CallIdentifier("call!"));
     expected.appendValueBlock(Token.AddressIdentifier("@address"));
     expected.appendValueBlock(Token.ValueIdentifier("value"));
+    expect(parsed).toEqual(expected);
+})
+#+end_src
+
+* Parse tapes
+
+#+begin_src js
+it("Parses an empty tape", async () => {
+    const parsed = await parseFile("()[]");
+    expected.openTape();
+    expected.closeTape();
     expect(parsed).toEqual(expected);
 })
 #+end_src

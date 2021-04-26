@@ -108,7 +108,6 @@ Parameter lists are one of the most complicated constructs in the syntax, so the
 #+begin_src js
                 [Token.OpenParams.event] : {
                     target: [ ".label.any", ".params.open" ],
-                    actions: [ "openParams" ]
                 },
             },
 #+end_src

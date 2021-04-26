@@ -19,7 +19,7 @@ class _AbstractSyntaxTree {
         this.root = isRoot;
         this.tape = Tape();
         this.unfinishedTapeStack = [];
-        this.unfinishedParameterList = [];
+        this.unfinishedParamList = [];
     }
 
     isEmpty() {
@@ -42,9 +42,9 @@ class _AbstractSyntaxTree {
 
     openTape(isInline) {
         this.unfinishedTapeStack.push(this.tape);
-        this.tape = Tape(isInline, this.unfinishedParameterList);
-        // Reset the parameter list for next time
-        this.unfinishedParameterList = [];
+        this.tape = Tape(isInline, this.unfinishedParamList);
+        // Reset the param list for next time
+        this.unfinishedParamList = [];
     }
 
     // Pop the stack and add the tape we have been building to it
@@ -55,7 +55,7 @@ class _AbstractSyntaxTree {
     }
 
     addParamForNextTape(token) {
-        const last = this.unfinishedParameterList.slice(-1)[0];
+        const last = this.unfinishedParamList.slice(-1)[0];
 
         if (last && last.label.is(Token.LabelIdentifier) && ! last.default) {
             // If the last was a label, this is the default value for it
@@ -63,11 +63,11 @@ class _AbstractSyntaxTree {
         }
         else if (token.is(Token.LabelIdentifier) ||
                 token.is(Token.ValueIdentifier)) {
-            if (this.parameterNameAlreadyUsed(token)) {
+            if (this.isParamNameAlreadyUsed(token)) {
                 throw new Error(`Duplicate parameter names not allowed: ${token.identifier}`);
             }
 
-            this.unfinishedParameterList.push({
+            this.unfinishedParamList.push({
                 label: token
             });
         }
@@ -76,8 +76,8 @@ class _AbstractSyntaxTree {
         }
     }
 
-    parameterNameAlreadyUsed(token) {
-        return this.unfinishedParameterList.find(param =>
+    isParamNameAlreadyUsed(token) {
+        return this.unfinishedParamList.find(param =>
             param.label.identifier == token.identifier);
     }
 }
