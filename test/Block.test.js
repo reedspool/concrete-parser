@@ -45,6 +45,18 @@ it("Basic tape", () => {
 })
 // Basics:3 ends here
 
+// Tapes
+
+
+// [[file:../literate/BlockTests.org::*Tapes][Tapes:1]]
+it("Instantiate a tape", () => {
+    const tape = Tape();
+    expect(tape.is(Category.Value, "ValueIdentifier")).toBe(false);
+    expect(tape.is(Category.Value, "Tape")).toBeTruthy();
+    expect(tape.asJS()).toEqual([]);
+});
+// Tapes:1 ends here
+
 // Making a block from a JS value
 
 

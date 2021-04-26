@@ -46,6 +46,17 @@ it("Basic tape", () => {
 })
 #+end_src
 
+* Tapes
+
+#+begin_src js
+it("Instantiate a tape", () => {
+    const tape = Tape();
+    expect(tape.is(Category.Value, "ValueIdentifier")).toBe(false);
+    expect(tape.is(Category.Value, "Tape")).toBeTruthy();
+    expect(tape.asJS()).toEqual([]);
+});
+#+end_src
+
 * Making a block from a JS value
 
 #+begin_src js
