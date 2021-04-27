@@ -156,7 +156,27 @@ it("Parses an empty tape with an empty param list", () => {
 #+end_src
 
 #+begin_src js
-it("Parses an empty tape with a param list", () => {
+it("Parses an empty tape with a simple param list", () => {
+    tree.addParamForNextTape(Token.ValueIdentifier("n").finalize());
+    tree.openTape();
+    tree.closeTape();
+    interpreter.send(Token.OpenParams());
+    expect(interpreter.S).toMatchState("ready.params.open");
+    interpreter.send(Token.ValueIdentifier("n").finalize());
+    interpreter.send(Token.CloseParams());
+    expect(interpreter.S).toMatchState("ready.params.expectingTape");
+    interpreter.send(Token.OpenTape());
+    interpreter.send(Token.CloseTape());
+    interpreter.send("DONE");
+
+    expect(interpreter.S).toMatchState("done");
+    expect(interpreter.C.tree).toEqual(tree);
+    expect(interpreter.C.tree.tape.cells).toHaveLength(1);
+})
+#+end_src
+
+#+begin_src js
+it("Parses an empty tape with complex param list", () => {
     tree.addParamForNextTape(Token.ValueIdentifier("meow").finalize());
     tree.addParamForNextTape(Token.LabelIdentifier("abcd").finalize());
     tree.addParamForNextTape(Token.ValueIdentifier("cheese").finalize());
@@ -168,7 +188,7 @@ it("Parses an empty tape with a param list", () => {
     interpreter.send(Token.LabelIdentifier("abcd").finalize());
     expect(interpreter.S).toMatchState("ready.params.expectingDefaultValue");
     interpreter.send(Token.ValueIdentifier("cheese").finalize());
-    interpreter.send(Token.CloseParams("meow"));
+    interpreter.send(Token.CloseParams());
     expect(interpreter.S).toMatchState("ready.params.expectingTape");
     interpreter.send(Token.OpenTape());
     interpreter.send(Token.CloseTape());

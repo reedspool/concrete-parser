@@ -115,6 +115,14 @@ export const definition = {
                     target: "none",
                     actions : [ "cleanupCurrentToken"]
                 },
+                [Kind.CloseTape.event] : {
+                    target: "none",
+                    actions : [ "cleanupCurrentToken", "insertCloseTapeToken"]
+                },
+                [Kind.CloseParams.event] : {
+                    target: "none",
+                    actions : [ "cleanupCurrentToken", "insertCloseParamsToken"]
+                },
                 [Kind.Comma.event] : {
                     target: "none",
                     actions: [ "cleanupCurrentToken", "insertCommaToken" ]

@@ -119,6 +119,18 @@ it("Parses an empty tape", async () => {
 })
 #+end_src
 
+#+begin_src js
+it("Parses identity tape", async () => {
+    const parsed = await parseFile("(n)[ n ]");
+    expected.addParamForNextTape(
+        Token.ValueIdentifier("n").finalize());
+    expected.openTape();
+    expected.appendValueBlock(Token.ValueIdentifier("n"));
+    expected.closeTape();
+    expect(parsed).toEqual(expected);
+})
+#+end_src
+
 * asJS() on blocks
 
 #+begin_src js

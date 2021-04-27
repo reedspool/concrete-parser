@@ -129,6 +129,18 @@ it("Parses an empty tape", async () => {
 })
 // Parse tapes:1 ends here
 
+// [[file:../literate/ParserTests.org::*Parse tapes][Parse tapes:2]]
+it("Parses identity tape", async () => {
+    const parsed = await parseFile("(n)[ n ]");
+    expected.addParamForNextTape(
+        Token.ValueIdentifier("n").finalize());
+    expected.openTape();
+    expected.appendValueBlock(Token.ValueIdentifier("n"));
+    expected.closeTape();
+    expect(parsed).toEqual(expected);
+})
+// Parse tapes:2 ends here
+
 // asJS() on blocks
 
 

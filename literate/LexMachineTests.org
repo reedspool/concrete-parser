@@ -237,11 +237,20 @@ it("Lexes an empty tape", () => {
 #+end_src
 
 #+begin_src js
-it("Lexes an empty tape with params", () => {
+it("Lexes an empty tape with empty params", () => {
     streamFile("()[]", streamCallback);
     expect(interpreter.S).toMatchState("done");
     expect(interpreter.C.tokens).toEqual(
         [ Token.OpenParams(), Token.CloseParams(), Token.OpenTape(), Token.CloseTape() ]);
+})
+#+end_src
+
+#+begin_src js
+it("Lexes identity tape", () => {
+    streamFile("(n)[n]", streamCallback);
+    expect(interpreter.S).toMatchState("done");
+    expect(interpreter.C.tokens).toEqual(
+        [ Token.OpenParams(), Token.ValueIdentifier("n").finalize(), Token.CloseParams(), Token.OpenTape(), Token.ValueIdentifier("n").finalize(), Token.CloseTape() ]);
 })
 #+end_src
 

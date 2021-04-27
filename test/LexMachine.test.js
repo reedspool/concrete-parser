@@ -263,13 +263,22 @@ it("Lexes an empty tape", () => {
 // Tapes:1 ends here
 
 // [[file:../literate/LexMachineTests.org::*Tapes][Tapes:2]]
-it("Lexes an empty tape with params", () => {
+it("Lexes an empty tape with empty params", () => {
     streamFile("()[]", streamCallback);
     expect(interpreter.S).toMatchState("done");
     expect(interpreter.C.tokens).toEqual(
         [ Token.OpenParams(), Token.CloseParams(), Token.OpenTape(), Token.CloseTape() ]);
 })
 // Tapes:2 ends here
+
+// [[file:../literate/LexMachineTests.org::*Tapes][Tapes:3]]
+it("Lexes identity tape", () => {
+    streamFile("(n)[n]", streamCallback);
+    expect(interpreter.S).toMatchState("done");
+    expect(interpreter.C.tokens).toEqual(
+        [ Token.OpenParams(), Token.ValueIdentifier("n").finalize(), Token.CloseParams(), Token.OpenTape(), Token.ValueIdentifier("n").finalize(), Token.CloseTape() ]);
+})
+// Tapes:3 ends here
 
 // All together
 
