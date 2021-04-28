@@ -100,6 +100,7 @@ it("Parses labels on blocks", async () => {
     const parsed = await parseFile("a: b");
     expected.labelNextCell(Token.LabelIdentifier("a:").finalize());
     expected.appendValueBlock(Token.ValueIdentifier("b").finalize());
+    expected.finalizeReferences();
     expect(parsed).toEqual(expected);
 })
 // Parse labels:1 ends here
@@ -113,6 +114,7 @@ it("Parses op blocks and identifiers", async () => {
     expected.appendOpBlock(Token.CallIdentifier("call!"));
     expected.appendValueBlock(Token.AddressIdentifier("@address"));
     expected.appendValueBlock(Token.ValueIdentifier("value"));
+    expected.finalizeReferences();
     expect(parsed).toEqual(expected);
 })
 // Parse Op blocks and identifiers:1 ends here
@@ -137,6 +139,7 @@ it("Parses identity tape", async () => {
     expected.openTape();
     expected.appendValueBlock(Token.ValueIdentifier("n"));
     expected.closeTape();
+    expected.finalizeReferences();
     expect(parsed).toEqual(expected);
 })
 // Parse tapes:2 ends here

@@ -249,6 +249,7 @@ export const definition = {
 
 // [[file:../literate/ParseMachine.org::*Definition][Definition:11]]
         done: {
+            entry: [ "finalizeReferences" ],
             type: "final",
             data: (C) => C.tree
         }
@@ -311,6 +312,9 @@ export const config = {
             // Closing an inline tape is the same as a normal one
             C.tree.closeTape();
         }),
+        finalizeReferences : assign((C, E) => {
+            C.tree.finalizeReferences();
+        })
     },
     guards : {}
 };

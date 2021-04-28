@@ -222,6 +222,7 @@ We can receive =DONE= event at almost any time, at which point the machine final
 
 #+begin_src js
         done: {
+            entry: [ "finalizeReferences" ],
             type: "final",
             data: (C) => C.tree
         }
@@ -283,6 +284,9 @@ export const config = {
             // Closing an inline tape is the same as a normal one
             C.tree.closeTape();
         }),
+        finalizeReferences : assign((C, E) => {
+            C.tree.finalizeReferences();
+        })
     },
     guards : {}
 };

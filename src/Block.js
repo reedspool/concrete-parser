@@ -145,6 +145,7 @@ class _Tape {
     constructor (isInline, params = []) {
         this.cells = [];
         this.commas = {};
+        this.references = {};
         this.params = params;
         this.labelsByIndex = [];
         this.labelsToIndex = {};
@@ -190,5 +191,61 @@ class _Tape {
     asJS() {
         return this.cells.map(block => block.asJS());
     }
-}
 // No heading:11 ends here
+
+
+
+// After a tree is fully parsed, establish the relationship between all identifiers. These relationships are our references. Any identifier which does not refer to a label in its tape, local scope, or a tape outside it, lexical scope, must refer to a global. Later, when globals exist, any unfulfilled references are errors.
+
+// Because parsing happens linearly, the parser must build these references after parsing is complete. If it tried to build these references while parsing, it would miss labels which are not yet parsed.
+
+// Each tape will have its own reference map. The keys of this map come from the identifiers on this tape, as well as those on any tapes composed within this one. The values of the map describe how to find the cell labeled with that identifier.
+
+// The reference values are one of three types. First, if the labeled cell exists on this tape or its parameters, the reference value has a type of "local" or "param". The second type is "upvalue," and is more complicated.
+
+// Upvalues are references which do not refer to labeled cells on this tape. They must either refer to a cell in one of this tape's ancestors (the tapes in which this tape exists) or a global. Otherwise, that identifier is an error.
+
+// Upvalues in this tape might also refer to upvalues from tapes within this one, creating a trail which points up the tape's ancestral tree until it matches a "local" reference, or a global.
+
+// The process for building the references is conceptually simpler than the structure itself.
+
+// 1. Establish all "param" references by looking at the label of each param.
+// 2. Establish all "local" references by looking at each label on the tape.
+// 3. Look at each block on this tape once again, and for each:
+//    a. If it's a non-label identifier, if we already established that reference, do nothing. Otherwise, it must be an "upvalue".
+//    b. If it's a tape, recurse and finalize its references. If that tape has any "upvalue" references, and we do not have an existing reference for that identifier, then copy the "upvalue" into this tape's reference map.
+
+
+// [[file:../literate/Block.org::+begin_src js][No heading:12]]
+    finalizeReferences() {
+        // First, add all parameters
+        this.params.forEach(({ label }, index) => {
+            this.references[label] = { type: "param", label, index };
+        });
+
+        // Then, add all local labels
+        Object.entries(this.labelsToIndex).forEach(([label, index]) => {
+            this.references[label] = { type: "local", label, index };
+        });
+
+        // Then recurse on tapes and add any upvalues for missing references.
+        this.cells.forEach((block) => {
+            const { identifier } = block;
+            if (identifier && ! this.references[identifier]) {
+                this.references[identifier] = { type: "upvalue", identifier };
+            }
+
+            if (block.is(Category.Value, "Tape")) {
+                block.finalizeReferences();
+
+                Object.values(block.references).forEach((value) => {
+                    const { label, type } = value;
+                    if (type == "upvalue" && ! this.references[label]) {
+                        this.references[label] = value;
+                    }
+                });
+            }
+        })
+    }
+}
+// No heading:12 ends here

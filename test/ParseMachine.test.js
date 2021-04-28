@@ -63,6 +63,7 @@ it("Parses just a blank", () => {
 it("Parses a blank with a label", () => {
     tree.labelNextCell(Token.LabelIdentifier("abcd").finalize());
     tree.appendValueBlock(Token.Blank());
+    tree.finalizeReferences();
     interpreter.send(Token.LabelIdentifier("abcd").finalize());
     interpreter.send(Token.Blank());
     interpreter.send("DONE");
@@ -168,6 +169,7 @@ it("Parses an empty tape with a simple param list", () => {
     tree.addParamForNextTape(Token.ValueIdentifier("n").finalize());
     tree.openTape();
     tree.closeTape();
+    tree.finalizeReferences();
     interpreter.send(Token.OpenParams());
     expect(interpreter.S).toMatchState("ready.params.open");
     interpreter.send(Token.ValueIdentifier("n").finalize());
@@ -190,6 +192,7 @@ it("Parses an empty tape with complex param list", () => {
     tree.addParamForNextTape(Token.ValueIdentifier("cheese").finalize());
     tree.openTape();
     tree.closeTape();
+    tree.finalizeReferences();
     interpreter.send(Token.OpenParams());
     expect(interpreter.S).toMatchState("ready.params.open");
     interpreter.send(Token.ValueIdentifier("meow").finalize());
@@ -213,6 +216,7 @@ it("Duplicate parameter labels error", () => {
     interpreter.send(Token.OpenParams());
     expect(interpreter.S).toMatchState("ready.params.open");
     interpreter.send(Token.ValueIdentifier("meow").finalize());
+    expect(interpreter.S).toMatchState("ready.params.open");
     const fn = () => interpreter.send(Token.LabelIdentifier("meow").finalize());
 
     expect(fn).toThrowError();

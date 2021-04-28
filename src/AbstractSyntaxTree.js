@@ -46,8 +46,14 @@ class _AbstractSyntaxTree {
         // Reset the param list for next time
         this.unfinishedParamList = [];
     }
+// No heading:3 ends here
 
-    // Pop the stack and add the tape we have been building to it
+
+
+// Pop the stack and add the tape we have been building to it.
+
+
+// [[file:../literate/AbstractSyntaxTree.org::+begin_src js][No heading:4]]
     closeTape() {
         const tape = this.unfinishedTapeStack.pop();
         tape.append(this.tape);
@@ -57,9 +63,10 @@ class _AbstractSyntaxTree {
     addParamForNextTape(token) {
         const last = this.unfinishedParamList.slice(-1)[0];
 
-        if (last && last.label.is(Token.LabelIdentifier) && ! last.default) {
+        if (last && last.isExpectingDefault) {
             // If the last was a label, this is the default value for it
             last.default = token;
+            delete last.isExpectingDefault;
         }
         else if (token.is(Token.LabelIdentifier) ||
                 token.is(Token.ValueIdentifier)) {
@@ -68,7 +75,8 @@ class _AbstractSyntaxTree {
             }
 
             this.unfinishedParamList.push({
-                label: token
+                label: token.identifier,
+                isExpectingDefault: token.is(Token.LabelIdentifier)
             });
         }
         else {
@@ -78,7 +86,18 @@ class _AbstractSyntaxTree {
 
     isParamNameAlreadyUsed(token) {
         return this.unfinishedParamList.find(param =>
-            param.label.identifier == token.identifier);
+            param.label == token.identifier);
+    }
+// No heading:4 ends here
+
+
+
+// Build all references on the tape.
+
+
+// [[file:../literate/AbstractSyntaxTree.org::+begin_src js][No heading:5]]
+    finalizeReferences() {
+        this.tape.finalizeReferences();
     }
 }
-// No heading:3 ends here
+// No heading:5 ends here
