@@ -76,7 +76,8 @@ class _AbstractSyntaxTree {
 
             this.unfinishedParamList.push({
                 label: token.identifier,
-                isExpectingDefault: token.is(Token.LabelIdentifier)
+                isExpectingDefault: token.is(Token.LabelIdentifier),
+                default: ValueBlock(Token.Blank())
             });
         }
         else {
