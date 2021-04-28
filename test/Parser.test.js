@@ -101,6 +101,8 @@ it("Parses labels on blocks", async () => {
     expected.labelNextCell(Token.LabelIdentifier("a:").finalize());
     expected.appendValueBlock(Token.ValueIdentifier("b").finalize());
     expected.finalizeReferences();
+    expect(parsed.tape.references).toBeDefined();
+    expect(parsed.tape.references["a"]).toBeDefined();
     expect(parsed).toEqual(expected);
 })
 // Parse labels:1 ends here
