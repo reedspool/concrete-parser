@@ -74,7 +74,7 @@ it("Parses a blank with a label", () => {
         .toEqual("abcd");
     expect(interpreter.C.tree.tape.labelsToIndex["abcd"])
         .toEqual(0);
-    expect(interpreter.C.tree.tape.getBlockAtLabel("abcd")).toEqual(ValueBlock(Token.Blank()))
+    expect(interpreter.C.tree.tape.getBlockByLabel("abcd")).toEqual(ValueBlock(Token.Blank()))
 })
 // Labels:1 ends here
 

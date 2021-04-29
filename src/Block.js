@@ -176,11 +176,11 @@ class _Tape {
         this.labelsToIndex[label] = index;
     }
 
-    getBlockAtLabel (label) {
+    getBlockByLabel (label) {
         return this.cells[this.labelsToIndex[label]];
     }
 
-    setBlockAtLabel (label, block) {
+    setBlockByLabel (label, block) {
         return this.cells[this.labelsToIndex[label]] = block;
     }
 
