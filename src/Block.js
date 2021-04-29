@@ -232,7 +232,7 @@ class _Tape {
         this.cells.forEach((block) => {
             const { identifier } = block;
             if (identifier && ! this.references[identifier]) {
-                this.references[identifier] = { type: "upvalue", identifier };
+                this.references[identifier] = { type: "upvalue", label: identifier };
             }
 
             if (block.is(Category.Value, "Tape")) {

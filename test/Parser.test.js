@@ -117,6 +117,9 @@ it("Parses op blocks and identifiers", async () => {
     expected.appendValueBlock(Token.AddressIdentifier("@address"));
     expected.appendValueBlock(Token.ValueIdentifier("value"));
     expected.finalizeReferences();
+    expect(parsed.tape.references).toBeDefined();
+    expect(parsed.tape.references["call"]).toBeDefined();
+    expect(parsed.tape.references["call"].type).toBe("upvalue");
     expect(parsed).toEqual(expected);
 })
 // Parse Op blocks and identifiers:1 ends here
@@ -142,9 +145,32 @@ it("Parses identity tape", async () => {
     expected.appendValueBlock(Token.ValueIdentifier("n"));
     expected.closeTape();
     expected.finalizeReferences();
+    expect(parsed.tape.cells[0].references).toBeDefined();
+    expect(parsed.tape.cells[0].references["n"]).toBeDefined();
+    expect(parsed.tape.cells[0].references["n"].type)
+        .toBe("param");
     expect(parsed).toEqual(expected);
 })
 // Parse tapes:2 ends here
+
+// [[file:../literate/ParserTests.org::*Parse tapes][Parse tapes:3]]
+it("Parses tape with globals", async () => {
+    const parsed = await parseFile("()[ n ]");
+    expected.openTape();
+    expected.appendValueBlock(Token.ValueIdentifier("n"));
+    expected.closeTape();
+    expected.finalizeReferences();
+    expect(parsed.tape.cells[0].references).toBeDefined();
+    expect(parsed.tape.cells[0].references["n"]).toBeDefined();
+    expect(parsed.tape.cells[0].references["n"].type)
+        .toBe("upvalue");
+    expect(parsed.tape.references).toBeDefined();
+    expect(parsed.tape.references["n"]).toBeDefined();
+    expect(parsed.tape.references["n"].type)
+        .toBe("upvalue");
+    expect(parsed).toEqual(expected);
+})
+// Parse tapes:3 ends here
 
 // asJS() on blocks
 
