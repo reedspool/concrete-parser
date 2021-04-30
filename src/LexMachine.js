@@ -79,6 +79,8 @@ export const definition = {
                 [Kind.Comma.event] : { actions: ["insertCommaToken"] },
                 [Kind.OpenTape.event] : { actions: ["insertOpenTapeToken"] },
                 [Kind.CloseTape.event] : { actions: ["insertCloseTapeToken"] },
+                [Kind.OpenInlineTape.event] : { actions: ["insertOpenInlineTapeToken"] },
+                [Kind.CloseInlineTape.event] : { actions: ["insertCloseInlineTapeToken"] },
                 [Kind.OpenParams.event] : { actions: ["insertOpenParamsToken"] },
                 [Kind.CloseParams.event] : { actions: ["insertCloseParamsToken"] },
                 [Kind.Alphabetic.event] : {
@@ -350,6 +352,12 @@ export const config = {
         }),
         insertCloseTapeToken: assign((C, E) => {
             C.tokens.push(Token.CloseTape());
+        }),
+        insertOpenInlineTapeToken: assign((C, E) => {
+            C.tokens.push(Token.OpenInlineTape());
+        }),
+        insertCloseInlineTapeToken: assign((C, E) => {
+            C.tokens.push(Token.CloseInlineTape());
         }),
         insertOpenParamsToken: assign((C, E) => {
             C.tokens.push(Token.OpenParams());

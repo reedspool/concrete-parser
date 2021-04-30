@@ -239,6 +239,38 @@ it("Parses tape with globals", async () => {
 })
 // Parse tapes:3 ends here
 
+// Parse inline tapes
+
+
+// [[file:../literate/ParserTests.org::*Parse inline tapes][Parse inline tapes:1]]
+it("Parses an empty inline tape", async () => {
+    const parsed = await parseFile("{}");
+    expected.openTape(true);
+    expected.closeTape();
+    expect(parsed).toEqual(expected);
+})
+// Parse inline tapes:1 ends here
+
+// [[file:../literate/ParserTests.org::*Parse inline tapes][Parse inline tapes:2]]
+it("Parses inline tape with globals", async () => {
+    const parsed = await parseFile("{ n }");
+    expected.openTape(true);
+    expected.appendValueBlock(Token.ValueIdentifier("n"));
+    expected.closeTape();
+    expected.finalizeReferences();
+    expect(parsed.tape.cells[0].isInline).toBe(true);
+    expect(parsed.tape.cells[0].references).toBeDefined();
+    expect(parsed.tape.cells[0].references["n"]).toBeDefined();
+    expect(parsed.tape.cells[0].references["n"].type)
+        .toBe("upvalue");
+    expect(parsed.tape.references).toBeDefined();
+    expect(parsed.tape.references["n"]).toBeDefined();
+    expect(parsed.tape.references["n"].type)
+        .toBe("upvalue");
+    expect(parsed).toEqual(expected);
+})
+// Parse inline tapes:2 ends here
+
 // asJS() on blocks
 
 
