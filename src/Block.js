@@ -172,6 +172,8 @@ class _Tape {
         copy.labelsByIndes = this.labelsByIndex;
         copy.labelsToIndex = this.labelsToIndex;
         copy.isInline = this.isInline;
+
+        return copy;
     }
     
     is(category, kind) {

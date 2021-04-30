@@ -145,6 +145,8 @@ To make a shallow copy, we only need to make a shallow copy of fields that are g
         copy.labelsByIndes = this.labelsByIndex;
         copy.labelsToIndex = this.labelsToIndex;
         copy.isInline = this.isInline;
+
+        return copy;
     }
     
     is(category, kind) {
