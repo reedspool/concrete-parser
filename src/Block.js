@@ -166,6 +166,12 @@ class _Tape {
     shallowCopy() {
         const copy = Tape(this.isInline);
         copy.cells = [ ...this.cells ];
+        copy.commas = this.commas;
+        copy.references = this.references;
+        copy.params = this.params;
+        copy.labelsByIndes = this.labelsByIndex;
+        copy.labelsToIndex = this.labelsToIndex;
+        copy.isInline = this.isInline;
     }
     
     is(category, kind) {
