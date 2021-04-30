@@ -5,7 +5,7 @@
 import { Machine } from "xstate";
 import { assign } from '@xstate/immer';
 import { Token } from "./LexicalToken";
-import { Kind } from "./CharacterStream";
+import { Kind, getKind } from "./CharacterStream";
 // Preamble:1 ends here
 
 // Definition
@@ -35,6 +35,11 @@ export const definition = {
 // [[file:../literate/LexMachine.org::*Definition][Definition:2]]
     on : {
         [Kind.EOF.event]: [
+            {
+                cond: "isCurrentTokenOnlyOperators",
+                actions: [ "transposeToCallIdentifier", "cleanupCurrentToken" ],
+                target: "done",
+            },
             {
                 cond: "isCurrentToken",
                 actions: ["cleanupCurrentToken"],
@@ -80,6 +85,10 @@ export const definition = {
                     target: "identifier",
                     actions: ["startValueIdentifierToken"],
                 },
+                [Kind.Operator.event] : {
+                    target: "identifier",
+                    actions: ["startValueIdentifierToken"],
+                },
                 [Kind.AtSign.event]: {
                     target: "identifier",
                     actions: ["startAddressIdentifierToken"]
@@ -108,13 +117,20 @@ export const definition = {
             on : {
                 [Kind.Alphabetic.event] : { actions: [ "addCharToCurrentToken" ] },
                 [Kind.Numeric.event] : { actions: [ "addCharToCurrentToken" ] },
+                [Kind.Operator.event] : { actions: [ "addCharToCurrentToken" ] },
                 [Kind.Underscore.event] : {
                     actions : [ "addCharToCurrentToken"]
                 },
-                [Kind.Whitespace.event] : {
-                    target: "none",
-                    actions : [ "cleanupCurrentToken"]
-                },
+                [Kind.Whitespace.event] : [
+                    {
+                        cond: "isCurrentTokenOnlyOperators",
+                        target: "callIdentifier"
+                    },
+                    {
+                        target: "none",
+                        actions : [ "cleanupCurrentToken"]
+                    }
+                ],
                 [Kind.CloseTape.event] : {
                     target: "none",
                     actions : [ "cleanupCurrentToken", "insertCloseTapeToken"]
@@ -123,10 +139,17 @@ export const definition = {
                     target: "none",
                     actions : [ "cleanupCurrentToken", "insertCloseParamsToken"]
                 },
-                [Kind.Comma.event] : {
-                    target: "none",
-                    actions: [ "cleanupCurrentToken", "insertCommaToken" ]
-                },
+                [Kind.Comma.event] : [
+                    {
+                        cond: "isCurrentTokenOnlyOperators",
+                        actions: [ "transposeToCallIdentifier", "cleanupCurrentToken", "insertCommaToken" ],
+                        target: "none"
+                    },
+                    {
+                        target: "none",
+                        actions: [ "cleanupCurrentToken", "insertCommaToken" ]
+                    }
+                ],
                 [Kind.Colon.event] : [
                     {
                         cond: "isCurrentTokenValueIdentifier",
@@ -350,6 +373,7 @@ export const config = {
         isCurrentToken: (C, E) => C.currentToken,
         isNoCurrentToken: (C, E) => ! C.currentToken,
         isCurrentTokenValueIdentifier: (C, E) => C.currentToken.type == Token.ValueIdentifier.event,
+        isCurrentTokenOnlyOperators: (C) => C.currentToken && ! C.currentToken.original.split("").find((char) => getKind(char) !== Kind.Operator)
     }
 };
 // Configuration:1 ends here

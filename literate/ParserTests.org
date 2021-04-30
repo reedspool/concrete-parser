@@ -114,6 +114,71 @@ it("Parses op blocks and identifiers", async () => {
     expect(parsed).toEqual(expected);
 })
 #+end_src
+* Parse Operator call identifiers, operator addresses, and labels
+#+begin_src js
+it("Parses single character operator call identifiers, addresses and labels", async () => {
+    const parsed = await parseFile("+: + - @* / % >, < = & | ~");
+    expected.labelNextCell(Token.LabelIdentifier("+:").finalize());
+    expected.appendOpBlock(Token.CallIdentifier("+"));
+    expected.appendOpBlock(Token.CallIdentifier("-"));
+    expected.appendValueBlock(Token.AddressIdentifier("@*"));
+    expected.appendOpBlock(Token.CallIdentifier("/"));
+    expected.appendOpBlock(Token.CallIdentifier("%"));
+    expected.appendOpBlock(Token.CallIdentifier(">"));
+    expected.appendComma();
+    expected.appendOpBlock(Token.CallIdentifier("<"));
+    expected.appendOpBlock(Token.CallIdentifier("="));
+    expected.appendOpBlock(Token.CallIdentifier("&"));
+    expected.appendOpBlock(Token.CallIdentifier("|"));
+    expected.appendOpBlock(Token.CallIdentifier("~"));
+    expected.finalizeReferences();
+    expect(parsed.tape.references).toBeDefined();
+    expect(parsed.tape.references["+"].type).toBe("local");
+    expect(parsed.tape.references["-"].type).toBe("upvalue");
+    expect(parsed.tape.references["*"].type).toBe("upvalue");
+    expect(parsed.tape.references["/"].type).toBe("upvalue");
+    expect(parsed.tape.references["%"].type).toBe("upvalue");
+    expect(parsed.tape.references[">"].type).toBe("upvalue");
+    expect(parsed.tape.references["<"].type).toBe("upvalue");
+    expect(parsed.tape.references["="].type).toBe("upvalue");
+    expect(parsed.tape.references["&"].type).toBe("upvalue");
+    expect(parsed.tape.references["|"].type).toBe("upvalue");
+    expect(parsed.tape.references["~"].type).toBe("upvalue");
+    expect(parsed).toEqual(expected);
+})
+#+end_src
+
+#+begin_src js
+it("Parses multichar operator call identifiers, addresses and labels", async () => {
+    const parsed = await parseFile("++: +- @** // %% <>, >< == && || ~~");
+    expected.labelNextCell(Token.LabelIdentifier("++:").finalize());
+    expected.appendOpBlock(Token.CallIdentifier("+-"));
+    expected.appendValueBlock(Token.AddressIdentifier("@**"));
+    expected.appendOpBlock(Token.CallIdentifier("//"));
+    expected.appendOpBlock(Token.CallIdentifier("%%"));
+    expected.appendOpBlock(Token.CallIdentifier("<>"));
+    expected.appendComma();
+    expected.appendOpBlock(Token.CallIdentifier("><"));
+    expected.appendOpBlock(Token.CallIdentifier("=="));
+    expected.appendOpBlock(Token.CallIdentifier("&&"));
+    expected.appendOpBlock(Token.CallIdentifier("||"));
+    expected.appendOpBlock(Token.CallIdentifier("~~"));
+    expected.finalizeReferences();
+    expect(parsed.tape.references).toBeDefined();
+    expect(parsed.tape.references["++"].type).toBe("local");
+    expect(parsed.tape.references["+-"].type).toBe("upvalue");
+    expect(parsed.tape.references["**"].type).toBe("upvalue");
+    expect(parsed.tape.references["//"].type).toBe("upvalue");
+    expect(parsed.tape.references["%%"].type).toBe("upvalue");
+    expect(parsed.tape.references["<>"].type).toBe("upvalue");
+    expect(parsed.tape.references["><"].type).toBe("upvalue");
+    expect(parsed.tape.references["=="].type).toBe("upvalue");
+    expect(parsed.tape.references["&&"].type).toBe("upvalue");
+    expect(parsed.tape.references["||"].type).toBe("upvalue");
+    expect(parsed.tape.references["~~"].type).toBe("upvalue");
+    expect(parsed).toEqual(expected);
+})
+#+end_src
 
 * Parse tapes
 

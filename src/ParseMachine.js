@@ -68,7 +68,7 @@ export const definition = {
 
 
 
-// Commas are not blocks, they bind value blocks together. So they don't add a block to the tape.
+// Commas are not blocks, they bind value blocks together, as well as separate them like whitespace. So they don't add a block to the tape.
 
 
 // [[file:../literate/ParseMachine.org::*Definition][Definition:3]]

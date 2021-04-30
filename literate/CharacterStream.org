@@ -114,6 +114,10 @@ Kind.CloseInlineTape = {
     event: "CLOSE_INLINE_TAPE",
     literal: "}",
 };
+Kind.Operator = {
+    event: "OPERATOR",
+    group: [ "+", "-", "*", "/", "%", ">", "<", "=", "&", "|", "~"]
+};
 Kind.EOF = {
     event: "EOF",
 };

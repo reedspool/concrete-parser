@@ -7,7 +7,7 @@
 import { Machine } from "xstate";
 import { assign } from '@xstate/immer';
 import { Token } from "./LexicalToken";
-import { Kind } from "./CharacterStream";
+import { Kind, getKind } from "./CharacterStream";
 #+end_src
 
 * Definition
@@ -33,6 +33,11 @@ If we receive any character that's not caught by a more specific sub-state, that
 #+begin_src js
     on : {
         [Kind.EOF.event]: [
+            {
+                cond: "isCurrentTokenOnlyOperators",
+                actions: [ "transposeToCallIdentifier", "cleanupCurrentToken" ],
+                target: "done",
+            },
             {
                 cond: "isCurrentToken",
                 actions: ["cleanupCurrentToken"],
@@ -72,6 +77,10 @@ Lots of tokens are just a single characters and will not invoke a state change.
                     target: "identifier",
                     actions: ["startValueIdentifierToken"],
                 },
+                [Kind.Operator.event] : {
+                    target: "identifier",
+                    actions: ["startValueIdentifierToken"],
+                },
                 [Kind.AtSign.event]: {
                     target: "identifier",
                     actions: ["startAddressIdentifierToken"]
@@ -97,13 +106,20 @@ Note: address and colon identifiers cannot end with an exclamation.
             on : {
                 [Kind.Alphabetic.event] : { actions: [ "addCharToCurrentToken" ] },
                 [Kind.Numeric.event] : { actions: [ "addCharToCurrentToken" ] },
+                [Kind.Operator.event] : { actions: [ "addCharToCurrentToken" ] },
                 [Kind.Underscore.event] : {
                     actions : [ "addCharToCurrentToken"]
                 },
-                [Kind.Whitespace.event] : {
-                    target: "none",
-                    actions : [ "cleanupCurrentToken"]
-                },
+                [Kind.Whitespace.event] : [
+                    {
+                        cond: "isCurrentTokenOnlyOperators",
+                        target: "callIdentifier"
+                    },
+                    {
+                        target: "none",
+                        actions : [ "cleanupCurrentToken"]
+                    }
+                ],
                 [Kind.CloseTape.event] : {
                     target: "none",
                     actions : [ "cleanupCurrentToken", "insertCloseTapeToken"]
@@ -112,10 +128,17 @@ Note: address and colon identifiers cannot end with an exclamation.
                     target: "none",
                     actions : [ "cleanupCurrentToken", "insertCloseParamsToken"]
                 },
-                [Kind.Comma.event] : {
-                    target: "none",
-                    actions: [ "cleanupCurrentToken", "insertCommaToken" ]
-                },
+                [Kind.Comma.event] : [
+                    {
+                        cond: "isCurrentTokenOnlyOperators",
+                        actions: [ "transposeToCallIdentifier", "cleanupCurrentToken", "insertCommaToken" ],
+                        target: "none"
+                    },
+                    {
+                        target: "none",
+                        actions: [ "cleanupCurrentToken", "insertCommaToken" ]
+                    }
+                ],
                 [Kind.Colon.event] : [
                     {
                         cond: "isCurrentTokenValueIdentifier",
@@ -317,6 +340,7 @@ export const config = {
         isCurrentToken: (C, E) => C.currentToken,
         isNoCurrentToken: (C, E) => ! C.currentToken,
         isCurrentTokenValueIdentifier: (C, E) => C.currentToken.type == Token.ValueIdentifier.event,
+        isCurrentTokenOnlyOperators: (C) => C.currentToken && ! C.currentToken.original.split("").find((char) => getKind(char) !== Kind.Operator)
     }
 };
 #+end_src

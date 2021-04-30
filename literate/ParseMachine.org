@@ -66,7 +66,7 @@ Almost all the top-level tokens except labels switch the label-substate back to 
                 },
 #+end_src
 
-Commas are not blocks, they bind value blocks together. So they don't add a block to the tape.
+Commas are not blocks, they bind value blocks together, as well as separate them like whitespace. So they don't add a block to the tape.
 
 #+begin_src js
                 [Token.Comma.event] : {

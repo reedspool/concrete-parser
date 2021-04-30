@@ -124,6 +124,73 @@ it("Parses op blocks and identifiers", async () => {
 })
 // Parse Op blocks and identifiers:1 ends here
 
+// Parse Operator call identifiers, operator addresses, and labels
+
+// [[file:../literate/ParserTests.org::*Parse Operator call identifiers, operator addresses, and labels][Parse Operator call identifiers, operator addresses, and labels:1]]
+it("Parses single character operator call identifiers, addresses and labels", async () => {
+    const parsed = await parseFile("+: + - @* / % >, < = & | ~");
+    expected.labelNextCell(Token.LabelIdentifier("+:").finalize());
+    expected.appendOpBlock(Token.CallIdentifier("+"));
+    expected.appendOpBlock(Token.CallIdentifier("-"));
+    expected.appendValueBlock(Token.AddressIdentifier("@*"));
+    expected.appendOpBlock(Token.CallIdentifier("/"));
+    expected.appendOpBlock(Token.CallIdentifier("%"));
+    expected.appendOpBlock(Token.CallIdentifier(">"));
+    expected.appendComma();
+    expected.appendOpBlock(Token.CallIdentifier("<"));
+    expected.appendOpBlock(Token.CallIdentifier("="));
+    expected.appendOpBlock(Token.CallIdentifier("&"));
+    expected.appendOpBlock(Token.CallIdentifier("|"));
+    expected.appendOpBlock(Token.CallIdentifier("~"));
+    expected.finalizeReferences();
+    expect(parsed.tape.references).toBeDefined();
+    expect(parsed.tape.references["+"].type).toBe("local");
+    expect(parsed.tape.references["-"].type).toBe("upvalue");
+    expect(parsed.tape.references["*"].type).toBe("upvalue");
+    expect(parsed.tape.references["/"].type).toBe("upvalue");
+    expect(parsed.tape.references["%"].type).toBe("upvalue");
+    expect(parsed.tape.references[">"].type).toBe("upvalue");
+    expect(parsed.tape.references["<"].type).toBe("upvalue");
+    expect(parsed.tape.references["="].type).toBe("upvalue");
+    expect(parsed.tape.references["&"].type).toBe("upvalue");
+    expect(parsed.tape.references["|"].type).toBe("upvalue");
+    expect(parsed.tape.references["~"].type).toBe("upvalue");
+    expect(parsed).toEqual(expected);
+})
+// Parse Operator call identifiers, operator addresses, and labels:1 ends here
+
+// [[file:../literate/ParserTests.org::*Parse Operator call identifiers, operator addresses, and labels][Parse Operator call identifiers, operator addresses, and labels:2]]
+it("Parses multichar operator call identifiers, addresses and labels", async () => {
+    const parsed = await parseFile("++: +- @** // %% <>, >< == && || ~~");
+    expected.labelNextCell(Token.LabelIdentifier("++:").finalize());
+    expected.appendOpBlock(Token.CallIdentifier("+-"));
+    expected.appendValueBlock(Token.AddressIdentifier("@**"));
+    expected.appendOpBlock(Token.CallIdentifier("//"));
+    expected.appendOpBlock(Token.CallIdentifier("%%"));
+    expected.appendOpBlock(Token.CallIdentifier("<>"));
+    expected.appendComma();
+    expected.appendOpBlock(Token.CallIdentifier("><"));
+    expected.appendOpBlock(Token.CallIdentifier("=="));
+    expected.appendOpBlock(Token.CallIdentifier("&&"));
+    expected.appendOpBlock(Token.CallIdentifier("||"));
+    expected.appendOpBlock(Token.CallIdentifier("~~"));
+    expected.finalizeReferences();
+    expect(parsed.tape.references).toBeDefined();
+    expect(parsed.tape.references["++"].type).toBe("local");
+    expect(parsed.tape.references["+-"].type).toBe("upvalue");
+    expect(parsed.tape.references["**"].type).toBe("upvalue");
+    expect(parsed.tape.references["//"].type).toBe("upvalue");
+    expect(parsed.tape.references["%%"].type).toBe("upvalue");
+    expect(parsed.tape.references["<>"].type).toBe("upvalue");
+    expect(parsed.tape.references["><"].type).toBe("upvalue");
+    expect(parsed.tape.references["=="].type).toBe("upvalue");
+    expect(parsed.tape.references["&&"].type).toBe("upvalue");
+    expect(parsed.tape.references["||"].type).toBe("upvalue");
+    expect(parsed.tape.references["~~"].type).toBe("upvalue");
+    expect(parsed).toEqual(expected);
+})
+// Parse Operator call identifiers, operator addresses, and labels:2 ends here
+
 // Parse tapes
 
 
