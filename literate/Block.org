@@ -130,6 +130,16 @@ class _Tape {
         this.category = { ...Category.Value };
         this.category.kind = "Tape";
     }
+#+end_src
+
+To make a shallow copy, we only need to make a shallow copy of fields that are going to change, and right now the only field that ever changes is cells.
+
+#+begin_src js
+
+    shallowCopy() {
+        const copy = Tape(this.isInline);
+        copy.cells = [ ...this.cells ];
+    }
     
     is(category, kind) {
         return this.category.name == category.name &&

@@ -155,6 +155,18 @@ class _Tape {
         this.category = { ...Category.Value };
         this.category.kind = "Tape";
     }
+// No heading:11 ends here
+
+
+
+// To make a shallow copy, we only need to make a shallow copy of fields that are going to change, and right now the only field that ever changes is cells.
+
+
+// [[file:../literate/Block.org::+begin_src js][No heading:12]]
+    shallowCopy() {
+        const copy = Tape(this.isInline);
+        copy.cells = [ ...this.cells ];
+    }
     
     is(category, kind) {
         return this.category.name == category.name &&
@@ -191,7 +203,7 @@ class _Tape {
     asJS() {
         return this.cells.map(block => block.asJS());
     }
-// No heading:11 ends here
+// No heading:12 ends here
 
 
 
@@ -216,7 +228,7 @@ class _Tape {
 //    b. If it's a tape, recurse and finalize its references. If that tape has any "upvalue" references, and we do not have an existing reference for that identifier, then copy the "upvalue" into this tape's reference map.
 
 
-// [[file:../literate/Block.org::+begin_src js][No heading:12]]
+// [[file:../literate/Block.org::+begin_src js][No heading:13]]
     finalizeReferences() {
         // First, add all parameters
         this.params.forEach(({ label }, index) => {
@@ -248,4 +260,4 @@ class _Tape {
         })
     }
 }
-// No heading:12 ends here
+// No heading:13 ends here
