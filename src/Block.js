@@ -169,13 +169,13 @@ class _Tape {
         copy.commas = this.commas;
         copy.references = this.references;
         copy.params = this.params;
-        copy.labelsByIndes = this.labelsByIndex;
+        copy.labelsByIndex = this.labelsByIndex;
         copy.labelsToIndex = this.labelsToIndex;
         copy.isInline = this.isInline;
 
         return copy;
     }
-    
+
     is(category, kind) {
         return this.category.name == category.name &&
             (! kind || this.category.kind == kind);
@@ -185,6 +185,59 @@ class _Tape {
 
     append (block) {
         this.cells.push(block);
+    }
+
+    insert (blocks, index) {
+        if (! Array.isArray(blocks)) blocks = [ blocks ];
+        this.cells.splice(index, 0, ...blocks);
+        this.shiftCommasAndLabels(index, blocks.length);
+    }
+
+    remove (index, count) {
+        const removed = this.cells.splice(index, count);
+        this.shiftCommasAndLabels(index, -1 * count);
+        return removed;
+    }
+// No heading:12 ends here
+
+
+
+// Upon any change to the tape that is not a simple append, the commas and labels must shifted left or right to account for new or exiting cells.
+
+// If there are new cells, shift the bookkeeping right. When cells are removed, shift the bookkeeping left, disposing of any which are in the removed chunk.
+
+
+// [[file:../literate/Block.org::+begin_src js][No heading:13]]
+    shiftCommasAndLabels(shiftIndex, count) {
+        const newLabelsByIndex = [];
+        const newLabelsToIndex = {};
+        const newCommas = {};
+
+        if (count == 0) {
+            return;
+        }
+
+        // Labels first.
+        this.labelsByIndex.forEach((label, index) => {
+            // If the count is leftward, and the current index is in that range, then this is garbage so don't add it to the new version.
+            if (count < 0 && index >= shiftIndex && index < shiftIndex + count) return;
+            const newIndex = index >= shiftIndex ? index + count : index;
+            newLabelsByIndex[newIndex] = label;
+            newLabelsToIndex[label] = newIndex;
+        });
+
+        // Then commas
+        Object.entries(this.commas).forEach(([index, isComma]) => {
+            // If the count is leftward, and the current index is in that range, then this is garbage so don't add it to the new version.
+            if (count < 0 && index >= shiftIndex && index < shiftIndex + count) return;
+            index = parseInt(index, 10);
+            const newIndex = index >= shiftIndex ? index + count : index;
+            newCommas[newIndex] = isComma;
+        });
+
+        this.labelsByIndex = newLabelsByIndex;
+        this.labelsToIndex = newLabelsToIndex;
+        this.commas = newCommas;
     }
 
     appendComma () {
@@ -211,7 +264,7 @@ class _Tape {
     asJS() {
         return this.cells.map(block => block.asJS());
     }
-// No heading:12 ends here
+// No heading:13 ends here
 
 
 
@@ -221,7 +274,7 @@ class _Tape {
 
 // Each tape will have its own reference map. The keys of this map come from the identifiers on this tape, as well as those on any tapes composed within this one. The values of the map describe how to find the cell labeled with that identifier.
 
-// The reference values are one of three types. First, if the labeled cell exists on this tape or its parameters, the reference value has a type of "local" or "param". The second type is "upvalue," and is more complicated.
+// The reference values are one of three types. First, if the labeled cell exists on this tape or its parameters, the reference value has a type of "local" or "param". The third type is "upvalue," and is more complicated.
 
 // Upvalues are references which do not refer to labeled cells on this tape. They must either refer to a cell in one of this tape's ancestors (the tapes in which this tape exists) or a global. Otherwise, that identifier is an error.
 
@@ -236,7 +289,7 @@ class _Tape {
 //    b. If it's a tape, recurse and finalize its references. If that tape has any "upvalue" references, and we do not have an existing reference for that identifier, then copy the "upvalue" into this tape's reference map.
 
 
-// [[file:../literate/Block.org::+begin_src js][No heading:13]]
+// [[file:../literate/Block.org::+begin_src js][No heading:14]]
     finalizeReferences() {
         // First, add all parameters
         this.params.forEach(({ label }, index) => {
@@ -268,4 +321,4 @@ class _Tape {
         })
     }
 }
-// No heading:13 ends here
+// No heading:14 ends here

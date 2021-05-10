@@ -99,6 +99,50 @@ it("Parses labels on blocks", async () => {
 })
 #+end_src
 
+* Parse then mutate labels and commas
+
+#+begin_src js
+it("Parses labels and commas then add blocks", async () => {
+    const parsed = await parseFile("a: b 1, 2 c: d");
+    expected.labelNextCell(Token.LabelIdentifier("a:").finalize());
+    expected.appendValueBlock(Token.ValueIdentifier("b").finalize());
+    expected.appendComma();
+    expected.appendValueBlock(Token.Number("2"));
+    expected.labelNextCell(Token.LabelIdentifier("c:").finalize());
+    expected.appendValueBlock(Token.ValueIdentifier("d").finalize());
+    expected.finalizeReferences();
+
+    expected.tape.insert(ValueBlock(Token.Number("1")), 1);
+    
+    expected.finalizeReferences();
+
+    expect(parsed).toEqual(expected);
+})
+#+end_src
+
+#+begin_src js
+it("Parses labels and commas then remove blocks", async () => {
+    const parsed = await parseFile("a: b, 1, 3 c: d");
+    expected.labelNextCell(Token.LabelIdentifier("a:").finalize());
+    expected.appendValueBlock(Token.ValueIdentifier("b").finalize());
+    expected.appendComma();
+    expected.appendValueBlock(Token.Number("1"));
+    expected.appendComma();
+    expected.appendValueBlock(Token.Number("2"));
+    expected.appendComma();
+    expected.appendValueBlock(Token.Number("3"));
+    expected.labelNextCell(Token.LabelIdentifier("c:").finalize());
+    expected.appendValueBlock(Token.ValueIdentifier("d").finalize());
+    expected.finalizeReferences();
+
+    expected.tape.remove(2, 1);
+
+    expected.finalizeReferences();
+
+    expect(parsed).toEqual(expected);
+})
+#+end_src
+
 * Parse Op blocks and identifiers
 
 #+begin_src js
