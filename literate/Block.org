@@ -82,6 +82,14 @@ We want to easily check which category a block belongs to, e.g. =myBlock.is(Cate
     }
 #+end_src
 
+We also want to check the truthiness of a block. Right now, the only false value is the number zero.
+
+#+begin_src js
+    truthy() {
+        return this.asJS() !== 0;
+    }
+#+end_src
+
 Any value block can exit the Concrete environment into JavaScript land.
 
 How to convert the block into a JS value depends on what it contains.

@@ -100,6 +100,17 @@ class _Block {
 
 
 
+// We also want to check the truthiness of a block. Right now, the only false value is the number zero.
+
+
+// [[file:../literate/Block.org::+begin_src js][No heading:8]]
+    truthy() {
+        return this.asJS() !== 0;
+    }
+// No heading:8 ends here
+
+
+
 // Any value block can exit the Concrete environment into JavaScript land.
 
 // How to convert the block into a JS value depends on what it contains.
@@ -107,7 +118,7 @@ class _Block {
 // Blocks are immutable so we can cache the value instead of recalculating it.
 
 
-// [[file:../literate/Block.org::+begin_src js][No heading:8]]
+// [[file:../literate/Block.org::+begin_src js][No heading:9]]
     asJS() {
         if (typeof this.jsValue != "undefined") return this.jsValue;
 
@@ -120,27 +131,27 @@ class _Block {
 
         return this.jsValue;
     }
-// No heading:8 ends here
+// No heading:9 ends here
 
 
 
 // Close the block class
 
 
-// [[file:../literate/Block.org::+begin_src js][No heading:9]]
+// [[file:../literate/Block.org::+begin_src js][No heading:10]]
 }
-// No heading:9 ends here
+// No heading:10 ends here
 
 
 
 // A tape is a container of blocks. It is always of category "Value".
 
 
-// [[file:../literate/Block.org::+begin_src js][No heading:10]]
-export const Tape = (...args) => new _Tape(...args);
-// No heading:10 ends here
-
 // [[file:../literate/Block.org::+begin_src js][No heading:11]]
+export const Tape = (...args) => new _Tape(...args);
+// No heading:11 ends here
+
+// [[file:../literate/Block.org::+begin_src js][No heading:12]]
 class _Tape {
     constructor (isInline, params = []) {
         this.cells = [];
@@ -155,14 +166,14 @@ class _Tape {
         this.category = { ...Category.Value };
         this.category.kind = "Tape";
     }
-// No heading:11 ends here
+// No heading:12 ends here
 
 
 
 // To make a shallow copy, we only need to make a shallow copy of fields that are going to change, and right now the only field that ever changes is cells.
 
 
-// [[file:../literate/Block.org::+begin_src js][No heading:12]]
+// [[file:../literate/Block.org::+begin_src js][No heading:13]]
     shallowCopy() {
         const copy = Tape(this.isInline);
         copy.cells = [ ...this.cells ];
@@ -198,7 +209,7 @@ class _Tape {
         this.shiftCommasAndLabels(index, -1 * count);
         return removed;
     }
-// No heading:12 ends here
+// No heading:13 ends here
 
 
 
@@ -207,7 +218,7 @@ class _Tape {
 // If there are new cells, shift the bookkeeping right. When cells are removed, shift the bookkeeping left, disposing of any which are in the removed chunk.
 
 
-// [[file:../literate/Block.org::+begin_src js][No heading:13]]
+// [[file:../literate/Block.org::+begin_src js][No heading:14]]
     shiftCommasAndLabels(shiftIndex, count) {
         const newLabelsByIndex = [];
         const newLabelsToIndex = {};
@@ -264,7 +275,7 @@ class _Tape {
     asJS() {
         return this.cells.map(block => block.asJS());
     }
-// No heading:13 ends here
+// No heading:14 ends here
 
 
 
@@ -289,7 +300,7 @@ class _Tape {
 //    b. If it's a tape, recurse and finalize its references. If that tape has any "upvalue" references, and we do not have an existing reference for that identifier, then copy the "upvalue" into this tape's reference map.
 
 
-// [[file:../literate/Block.org::+begin_src js][No heading:14]]
+// [[file:../literate/Block.org::+begin_src js][No heading:15]]
     finalizeReferences() {
         // First, add all parameters
         this.params.forEach(({ label }, index) => {
@@ -321,4 +332,4 @@ class _Tape {
         })
     }
 }
-// No heading:14 ends here
+// No heading:15 ends here

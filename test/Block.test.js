@@ -80,3 +80,22 @@ it("Number block from falsey JS value, no token", () => {
     expect(block.asJS()).toEqual(0);
 })
 // Making a block from a JS value:2 ends here
+
+// Falsiness
+
+
+// [[file:../literate/BlockTests.org::*Falsiness][Falsiness:1]]
+it("Most blocks are truthy", () => {
+    const token = Token.Blank();
+    const block = ValueBlock(token);
+    expect(block.truthy()).toEqual(true);
+})
+// Falsiness:1 ends here
+
+// [[file:../literate/BlockTests.org::*Falsiness][Falsiness:2]]
+it("Most blocks are truthy", () => {
+    const block = ValueBlock.fromJS(0);
+
+    expect(block.truthy()).toBe(false);
+})
+// Falsiness:2 ends here
